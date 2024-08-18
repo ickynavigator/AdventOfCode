@@ -67,7 +67,11 @@ export async function createDay(year: string, day: string) {
 
 	await fs.mkdir(dayFolderPath, { recursive: true });
 
-	const template = await getTemplate("day.ts");
+	const _template = await getTemplate("day.ts");
+	const template = `// https://adventofcode.com/${year}/day/${day}
+
+${_template}`;
+
 	await fs.writeFile(indexPath, template);
 	await fs.writeFile(inputPath, "");
 }
