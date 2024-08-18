@@ -7,6 +7,7 @@
         "cli": "tsx ./.cli/index.ts"
     },
     "devDependencies": {
+        "@biomejs/biome": "^1.8.3",
         "@total-typescript/tsconfig": "^1.0.4",
         "@types/node": "^20.11.1",
         "typescript": "^5.5.4"
