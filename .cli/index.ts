@@ -19,6 +19,8 @@ export interface CLIFlags {
 }
 
 async function cli() {
+	process.stdout.write("\x1Bc");
+
 	const program = new Command()
 		.name(name)
 		.description("CLI for automating the AOC solutions creation/test process")
