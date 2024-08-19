@@ -91,7 +91,7 @@ export async function watchDay(year: string, day: string) {
 
 		const dayRunHandler = async () => {
 			try {
-				await import(dayPath);
+				await import(`${dayPath}?cacheBust=${Date.now()}`);
 			} catch (err) {
 				console.error(err);
 				log.error("Failed to run day! Saving the file to rerun.");
@@ -104,6 +104,7 @@ export async function watchDay(year: string, day: string) {
 			resolve();
 		};
 
+		dayRunHandler();
 		watcher.on("change", dayRunHandler);
 
 		watcher.on("error", reject);
