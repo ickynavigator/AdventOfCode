@@ -4,11 +4,8 @@ my solutions for the [Advent of Code](https://adventofcode.com/) puzzles
 
 # Instructions
 
-- cd into the directory containing the solution {YEAR}/{DAY}
-- update the input.txt (contains my personal inputs)
-- run the index.ts file
+- run `nr cli` and follow the prompts to create a new day, run a day or watch a day
 
 ```bash
-$ cd 2022/1
-$ deno run --allow-read index.ts
+$ nr cli
 ```
