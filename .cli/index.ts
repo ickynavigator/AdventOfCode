@@ -2,6 +2,8 @@ import { styleText } from "node:util";
 import { intro, log, outro } from "@clack/prompts";
 import { Command } from "commander";
 import { name, version } from "../package.json";
+import { modes } from "./constants";
+import { createDay, runDay, watchDay } from "./controllers";
 import {
 	getDayBySelectPrompt,
 	getDayByTextPrompt,
@@ -9,7 +11,6 @@ import {
 	getYearBySelectPrompt,
 	getYearByTextPrompt,
 } from "./prompts";
-import { createDay, modes, runDay, watchDay } from "./utils";
 
 export interface CLIFlags {
 	mode: (typeof modes)[keyof typeof modes];
@@ -69,8 +70,6 @@ async function main(args: Partial<CLIFlags>) {
 			const year = args.year || (await getYearBySelectPrompt());
 			const day = args.day || (await getDayBySelectPrompt(year));
 
-			log.info(`Running ${year}/${day}`);
-
 			try {
 				await runDay(year, day);
 			} catch {
@@ -81,8 +80,6 @@ async function main(args: Partial<CLIFlags>) {
 		case modes.WATCH_TEST: {
 			const year = args.year || (await getYearBySelectPrompt());
 			const day = args.day || (await getDayBySelectPrompt(year));
-
-			log.info(`Running ${year}/${day} in watch mode...`);
 
 			try {
 				await watchDay(year, day);
@@ -97,11 +94,6 @@ async function main(args: Partial<CLIFlags>) {
 
 			try {
 				await createDay(year, day);
-
-				const newPath = `./solutions/${year}/${day}`;
-				log.success(`Day created! go to ${newPath}/index.ts to start!`);
-				log.info(`AOC link: https://adventofcode.com/${year}/day/${day}`);
-				log.info(`Remember to add your input to ${newPath}/input.txt!`);
 			} catch {
 				log.error("Failed to create day! Does it already exist?");
 			}

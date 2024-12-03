@@ -1,116 +1,101 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { styleText } from "node:util";
-import { log, outro } from "@clack/prompts";
+import { outro } from "@clack/prompts";
 import chokidar from "chokidar";
 
-export const modes = {
-	RUN_TEST: "run_tests",
-	WATCH_TEST: "watch_tests",
-	CREATE_DAY: "create_day",
-} as const;
+export class _FileManager {
+	__dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+	async doesFileExist(folderPath: string, fileName: string) {
+		try {
+			return await fs.readdir(folderPath).then((files) => files.includes(fileName));
+		} catch {
+			return false;
+		}
+	}
 
-export async function doesFileExist(folderPath: string, fileName: string) {
-	try {
-		return await fs.readdir(folderPath).then((files) => files.includes(fileName));
-	} catch {
-		return false;
+	async #_getDirList(...location: string[]) {
+		return await fs.readdir(path.resolve(this.__dirname, ...location));
+	}
+
+	async getDirList(...location: string[]) {
+		try {
+			return await this.#_getDirList(...location);
+		} catch {
+			outro(styleText("bgRed", "An error occured while trying to get the list!"));
+			process.exit(1);
+		}
+	}
+
+	async getDirList_safe(...location: string[]) {
+		try {
+			return await this.#_getDirList(...location);
+		} catch {
+			return [];
+		}
+	}
+
+	async watch(
+		files: string[],
+		options?: {
+			onChange?: (path: string) => void;
+			onError?: (err: unknown) => void;
+			onExit?: () => void;
+		},
+	) {
+		return new Promise<void>((resolve, reject) => {
+			const watcher = chokidar.watch(files);
+
+			const changeHandler = (path: string) => {
+				options?.onChange?.(path);
+			};
+
+			const errorHandler = (error: Error) => {
+				options?.onError?.(error);
+
+				reject();
+			};
+
+			const exitHandler = () => {
+				options?.onExit?.();
+
+				watcher.close?.();
+				resolve();
+			};
+
+			watcher.on("change", changeHandler).on("error", errorHandler);
+			process.on("SIGINT", exitHandler).on("SIGTERM", exitHandler).on("SIGQUIT", exitHandler);
+		});
 	}
 }
 
-export async function getTemplate(..._templatePath: string[]) {
-	return await fs.readFile(path.resolve(__dirname, "template", ..._templatePath), {
-		encoding: "utf8",
-	});
-}
+export const FileManager = new _FileManager();
 
 export async function getYears(shouldNotFail = false) {
-	try {
-		const yearPath = path.resolve(__dirname, "..", "solutions");
-		const availableYears = await fs.readdir(yearPath);
+	let method: "getDirList" | "getDirList_safe";
 
-		return availableYears.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-	} catch (_err) {
-		if (shouldNotFail) return [];
-		outro(styleText("bgRed", "An error occured while trying to get the year list!"));
-
-		process.exit(1);
+	if (shouldNotFail) {
+		method = "getDirList_safe";
+	} else {
+		method = "getDirList";
 	}
+
+	return (await FileManager[method]("..", "solutions")).sort((a, b) =>
+		a.localeCompare(b, undefined, { numeric: true }),
+	);
 }
 
 export async function getDays(year: string, shouldNotFail = false) {
-	try {
-		const dayPath = path.resolve(__dirname, "..", "solutions", year);
-		const availableYears = await fs.readdir(dayPath);
+	let method: "getDirList" | "getDirList_safe";
 
-		return availableYears.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-	} catch (_err) {
-		if (shouldNotFail) return [];
-		outro(styleText("bgRed", "An error occured while trying to get the day list!"));
-
-		process.exit(1);
-	}
-}
-
-export async function createDay(year: string, day: string) {
-	const yearFolderPath = path.resolve(__dirname, "..", "solutions", year);
-	const dayFolderPath = path.resolve(yearFolderPath, day);
-	const indexPath = path.resolve(dayFolderPath, "index.ts");
-	const inputPath = path.resolve(dayFolderPath, "input.txt");
-
-	const dayExists = await doesFileExist(yearFolderPath, day);
-	if (dayExists) {
-		throw new Error("Day already exists!");
+	if (shouldNotFail) {
+		method = "getDirList_safe";
+	} else {
+		method = "getDirList";
 	}
 
-	await fs.mkdir(dayFolderPath, { recursive: true });
-
-	const _template = await getTemplate("day.ts");
-	const template = `// https://adventofcode.com/${year}/day/${day}
-
-${_template}`;
-
-	await fs.writeFile(indexPath, template);
-	await fs.writeFile(inputPath, "");
-}
-
-export async function runDay(year: string, day: string) {
-	const dayPath = path.resolve(__dirname, "..", "solutions", year, day);
-
-	await import(dayPath);
-}
-
-export async function watchDay(year: string, day: string) {
-	return new Promise<void>((resolve, reject) => {
-		const dayPath = path.resolve(__dirname, "..", "solutions", year, day, "index.ts");
-		const inputPath = path.resolve(__dirname, "..", "solutions", year, day, "input.txt");
-
-		const watcher = chokidar.watch([dayPath, inputPath]);
-
-		const dayRunHandler = async () => {
-			try {
-				await import(`${dayPath}?cacheBust=${Date.now()}`);
-			} catch (err) {
-				console.error(err);
-				log.error("Failed to run day! Saving the file to rerun.");
-			}
-		};
-
-		const exitHandler = () => {
-			log.info("Closing Watcher...");
-			watcher.close();
-			resolve();
-		};
-
-		dayRunHandler();
-		watcher.on("change", dayRunHandler);
-
-		watcher.on("error", reject);
-
-		process.on("SIGINT", exitHandler);
-		process.on("SIGTERM", exitHandler);
-		process.on("SIGQUIT", exitHandler);
-	});
+	return (await FileManager[method]("..", "solutions", year)).sort((a, b) =>
+		a.localeCompare(b, undefined, { numeric: true }),
+	);
 }
