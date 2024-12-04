@@ -24,18 +24,22 @@ export async function createDay(year: string, day: string) {
 ${_template}`;
 
 		await fs.writeFile(indexPath, template);
+
+		log.success(`Day created! go to ./solutions/${year}/${day}/index.ts to start!`);
+	} else {
+		log.info(`Day already created! go to ./solutions/${year}/${day}/index.ts to start!`);
 	}
 
 	const dayInputExists = await FileManager.doesFileExist(dayFolderPath, "input.txt");
 	if (!dayInputExists) {
 		await fs.writeFile(inputPath, "");
+
+		log.success(`Remember to add your input to ./solutions/${year}/${day}/input.txt!`);
+	} else {
+		log.info(`You can update your input at ./solutions/${year}/${day}/input.txt!`);
 	}
 
-	const newPath = `./solutions/${year}/${day}`;
-
-	log.success(`Day created! go to ${newPath}/index.ts to start!`);
 	log.info(`AOC link: https://adventofcode.com/${year}/day/${day}`);
-	log.info(`Remember to add your input to ${newPath}/input.txt!`);
 }
 
 export async function runDay(year: string, day: string) {
