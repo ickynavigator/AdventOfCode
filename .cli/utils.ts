@@ -72,7 +72,7 @@ export class _FileManager {
 
 export const FileManager = new _FileManager();
 
-export async function getYears(shouldNotFail = false) {
+async function getSortedList(path: string[], shouldNotFail: boolean) {
 	let method: "getDirList" | "getDirList_safe";
 
 	if (shouldNotFail) {
@@ -81,21 +81,14 @@ export async function getYears(shouldNotFail = false) {
 		method = "getDirList";
 	}
 
-	return (await FileManager[method]("..", "solutions")).sort((a, b) =>
-		a.localeCompare(b, undefined, { numeric: true }),
-	);
+	const _files = await FileManager[method](...path);
+	return _files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+}
+
+export async function getYears(shouldNotFail = false) {
+	return getSortedList(["..", "solutions"], shouldNotFail);
 }
 
 export async function getDays(year: string, shouldNotFail = false) {
-	let method: "getDirList" | "getDirList_safe";
-
-	if (shouldNotFail) {
-		method = "getDirList_safe";
-	} else {
-		method = "getDirList";
-	}
-
-	return (await FileManager[method]("..", "solutions", year)).sort((a, b) =>
-		a.localeCompare(b, undefined, { numeric: true }),
-	);
+	return getSortedList(["..", "solutions", year], shouldNotFail);
 }

@@ -13,21 +13,23 @@ export async function createDay(year: string, day: string) {
 	const indexPath = path.resolve(dayFolderPath, "index.ts");
 	const inputPath = path.resolve(dayFolderPath, "input.txt");
 
-	const dayExists = await FileManager.doesFileExist(yearFolderPath, day);
-	if (dayExists) {
-		throw new Error("Day already exists!");
-	}
+	const dayIndexExists = await FileManager.doesFileExist(dayFolderPath, "index.ts");
+	if (!dayIndexExists) {
+		await fs.mkdir(dayFolderPath, { recursive: true });
 
-	await fs.mkdir(dayFolderPath, { recursive: true });
-
-	const templatePath = path.resolve(FileManager.__dirname, "template", "day.ts");
-	const _template = await fs.readFile(templatePath, { encoding: "utf8" });
-	const template = `// https://adventofcode.com/${year}/day/${day}
+		const templatePath = path.resolve(FileManager.__dirname, "template", "day.ts");
+		const _template = await fs.readFile(templatePath, { encoding: "utf8" });
+		const template = `// https://adventofcode.com/${year}/day/${day}
 
 ${_template}`;
 
-	await fs.writeFile(indexPath, template);
-	await fs.writeFile(inputPath, "");
+		await fs.writeFile(indexPath, template);
+	}
+
+	const dayInputExists = await FileManager.doesFileExist(dayFolderPath, "input.txt");
+	if (!dayInputExists) {
+		await fs.writeFile(inputPath, "");
+	}
 
 	const newPath = `./solutions/${year}/${day}`;
 
