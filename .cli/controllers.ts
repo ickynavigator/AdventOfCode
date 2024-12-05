@@ -56,7 +56,7 @@ export async function watchDay(year: string, day: string) {
 	const dayPath = path.resolve(folderPath, "index.ts");
 	const inputPath = path.resolve(folderPath, "input.txt");
 
-	FileManager.watch([dayPath, inputPath], {
+	return FileManager.watch([dayPath, inputPath], {
 		async onChange() {
 			try {
 				await import(`${dayPath}?cacheBust=${Date.now()}`);
