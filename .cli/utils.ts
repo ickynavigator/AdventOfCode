@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { styleText } from "node:util";
-import { outro } from "@clack/prompts";
+import { log, outro } from "@clack/prompts";
 import chokidar from "chokidar";
 
 export class _FileManager {
@@ -48,6 +48,7 @@ export class _FileManager {
 			const watcher = chokidar.watch(files);
 
 			const changeHandler = (path: string) => {
+				log.info("File save detected! Rerunning");
 				options?.onChange?.(path);
 			};
 
