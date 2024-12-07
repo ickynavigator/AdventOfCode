@@ -42,12 +42,16 @@ export class _FileManager {
 			onChange?: (path: string) => void;
 			onError?: (err: unknown) => void;
 			onExit?: () => void;
+			clearOnSave?: boolean;
 		},
 	) {
 		return new Promise<void>((resolve, reject) => {
 			const watcher = chokidar.watch(files);
 
 			const changeHandler = (path: string) => {
+				if (options?.clearOnSave) {
+					process.stdout.write("\x1Bc");
+				}
 				log.info("File save detected! Rerunning");
 				options?.onChange?.(path);
 			};
