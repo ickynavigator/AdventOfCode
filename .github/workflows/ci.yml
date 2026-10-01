@@ -45,9 +45,12 @@ jobs:
               with:
                   cache: true
 
+            - name: Setup Biome
+              uses: biomejs/setup-biome@v2
+
             - name: Run Lint
               run: |
-                  pnpm run lint
+                  biome ci
 
     discover:
         name: Discover Days
