@@ -51,7 +51,7 @@ export class _FileManager {
 				options?.onChange?.(path);
 			};
 
-			const errorHandler = (error: Error) => {
+			const errorHandler = (error: unknown) => {
 				options?.onError?.(error);
 
 				reject();

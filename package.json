@@ -7,20 +7,20 @@
         "cli": "node ./.cli/index.ts"
     },
     "devDependencies": {
-        "@biomejs/biome": "^1.8.3",
+        "@biomejs/biome": "^2.5.14",
         "@total-typescript/tsconfig": "^1.0.4",
-        "@types/node": "^20.11.1",
-        "typescript": "^5.5.4"
+        "@types/node": "^26.6.3",
+        "typescript": "^7.0.2"
     },
     "dependencies": {
-        "@clack/prompts": "^0.7.0",
-        "chokidar": "^3.6.0",
-        "commander": "^12.1.0"
+        "@clack/prompts": "^1.8.1",
+        "chokidar": "^5.0.0",
+        "commander": "^15.0.0"
     },
     "devEngines": {
         "runtime": {
             "name": "node",
-            "version": "26.7.0",
+            "version": "26.10.0",
             "onFail": "error"
         },
         "packageManager": {

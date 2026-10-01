@@ -3,7 +3,7 @@ import { modes } from "./constants.ts";
 import { getDays, getYears } from "./utils.ts";
 
 export async function getModeByPrompt() {
-	const mode = await select<Array<{ value: string; label: string }>, string>({
+	const mode = await select({
 		message: "Select a mode.",
 		options: [
 			{
@@ -33,7 +33,7 @@ export async function getYearBySelectPrompt() {
 	const availableYears = await getYears();
 	const availableYearOptions = availableYears.map((y) => ({ value: y }));
 
-	const year = await select<Array<{ value: string }>, string>({
+	const year = await select({
 		message: "Pick a year.",
 		options: availableYearOptions,
 		initialValue: availableYearOptions[availableYearOptions.length - 1].value,
@@ -50,7 +50,7 @@ export async function getDayBySelectPrompt(year: string) {
 	const availableDays = await getDays(year);
 	const availableDayOptions = availableDays.map((y) => ({ value: y }));
 
-	const day = await select<Array<{ value: string }>, string>({
+	const day = await select({
 		message: "Pick a day.",
 		options: availableDayOptions,
 		initialValue: availableDayOptions[availableDayOptions.length - 1].value,
@@ -73,6 +73,10 @@ export async function getYearByTextPrompt() {
 		message: "What year?",
 		initialValue: currentYear.toString(),
 		validate: (value) => {
+			if (!value) {
+				return "Please enter a value.";
+			}
+
 			if (!/^\d{4}$/.test(value.trim())) {
 				return "Please enter a valid year.";
 			}
@@ -100,6 +104,10 @@ export async function getDayByTextPrompt(year: string) {
 		message: "Pick a day.",
 		initialValue: (highestDay + 1).toString(),
 		validate: (value) => {
+			if (!value) {
+				return "Please enter a value.";
+			}
+
 			if (availableDays.includes(value.trim())) {
 				return "That day has already been created.";
 			}
