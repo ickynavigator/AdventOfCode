@@ -78,8 +78,6 @@ const CliFlagSchema = z.object({
 type CLIFlags = z.infer<typeof CliFlagSchema>;
 
 async function cli() {
-	process.stdout.write("\x1Bc");
-
 	const program = new Command()
 		.name(name)
 		.description("CLI for automating the AOC solutions creation/test process")
