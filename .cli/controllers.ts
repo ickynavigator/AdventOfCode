@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { log } from "@clack/prompts";
-import { FileManager } from "./utils";
+import { FileManager } from "./utils.ts";
 
 export async function createDay(year: string, day: string) {
 	log.info(`Creating ${year}/${day}`);

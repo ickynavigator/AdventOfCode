@@ -1,6 +1,6 @@
 import { cancel, isCancel, select, text } from "@clack/prompts";
-import { modes } from "./constants";
-import { getDays, getYears } from "./utils";
+import { modes } from "./constants.ts";
+import { getDays, getYears } from "./utils.ts";
 
 export async function getModeByPrompt() {
 	const mode = await select<Array<{ value: string; label: string }>, string>({

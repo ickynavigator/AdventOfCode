@@ -1,16 +1,18 @@
 import { styleText } from "node:util";
 import { intro, log, outro } from "@clack/prompts";
 import { Command } from "commander";
-import { name, version } from "../package.json";
-import { modes } from "./constants";
-import { createDay, runDay, watchDay } from "./controllers";
+import packageJson from "../package.json" with { type: "json" };
+import { modes } from "./constants.ts";
+import { createDay, runDay, watchDay } from "./controllers.ts";
 import {
 	getDayBySelectPrompt,
 	getDayByTextPrompt,
 	getModeByPrompt,
 	getYearBySelectPrompt,
 	getYearByTextPrompt,
-} from "./prompts";
+} from "./prompts.ts";
+
+const { name, version } = packageJson;
 
 export interface CLIFlags {
 	mode: (typeof modes)[keyof typeof modes];
