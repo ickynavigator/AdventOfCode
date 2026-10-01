@@ -8,7 +8,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    lint:
+    typecheck:
         name: Lint
         runs-on: ubuntu-latest
 
@@ -22,6 +22,17 @@ jobs:
             - name: Run Typecheck
               run: |
                   pnpm run typecheck
+
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - uses: pnpm/setup@v3
+              name: Install pnpm
 
             - name: Run Lint
               run: |
