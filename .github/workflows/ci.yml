@@ -60,6 +60,9 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v7
 
+            - uses: pnpm/setup@v3
+              name: Install pnpm
+
             - name: Build matrix of days grouped by year
               id: set-matrix
               run: |
@@ -98,3 +101,53 @@ jobs:
         with:
             year: ${{ matrix.year }}
             days: ${{ toJson(fromJson(needs.discover.outputs.matrix)[matrix.year]) }}
+
+    summary:
+        name: Test Summary
+        needs: test
+        if: always()
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+
+        steps:
+            - name: Build consolidated day/year summary
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        run_id: context.runId,
+                        per_page: 100,
+                      });
+
+                      const dayJobRegex = /^Year (\d+) \/ Day (\d+)$/;
+                      const byYear = {};
+                      for (const job of jobs) {
+                        const match = job.name.match(dayJobRegex);
+                        if (!match) continue;
+                        const [, year, day] = match;
+                        (byYear[year] ??= []).push({ day: Number(day), conclusion: job.conclusion });
+                      }
+
+                      const icon = (conclusion) =>
+                        conclusion === "success" ? "✅" : conclusion === "skipped" ? "⏭️" : "❌";
+
+                      let passed = 0;
+                      let total = 0;
+                      const lines = ["## Day Test Results", ""];
+                      for (const year of Object.keys(byYear).sort()) {
+                        const days = byYear[year].sort((a, b) => a.day - b.day);
+                        lines.push(`### ${year}`, "", "| Day | Result |", "| --- | --- |");
+                        for (const { day, conclusion } of days) {
+                          lines.push(`| ${day} | ${icon(conclusion)} ${conclusion} |`);
+                          total += 1;
+                          if (conclusion === "success") passed += 1;
+                        }
+                        lines.push("");
+                      }
+                      lines.splice(2, 0, `${passed}/${total} days passing`, "");
+
+                      await core.summary.addRaw(lines.join("\n")).write();
