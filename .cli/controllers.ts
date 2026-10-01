@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { log } from "@clack/prompts";
+import { simpleGit } from "simple-git";
 import { FileManager, getDays, getYears } from "./utils.ts";
 
 export async function createDay(year: string, day: string) {
@@ -48,19 +49,32 @@ export async function runDay(year: string, day: string) {
 	await import(path.resolve(FileManager.__dirname, "..", "solutions", year, day, "index.ts"));
 }
 
-export async function runAllDays() {
+export async function runAllDays(options?: { changedOnly?: boolean }) {
+	const changedDays = options?.changedOnly ? await getChangedDays() : undefined;
+	let hasChangedDays = false;
+
 	const years = await getYears(true);
 
 	for (const currentYear of years) {
 		const days = await getDays(currentYear, true);
 
 		for (const currentDay of days) {
+			if (changedDays && !changedDays.has(`${currentYear}/${currentDay}`)) {
+				continue;
+			}
+
+			hasChangedDays = true;
+
 			try {
 				await runDay(currentYear, currentDay);
 			} catch {
 				log.error(`Failed to run day ${currentYear}/${currentDay}!. Does it exist?`);
 			}
 		}
+	}
+
+	if (options?.changedOnly && !hasChangedDays) {
+		log.info("No changed solutions to run.");
 	}
 }
 
@@ -85,4 +99,31 @@ export async function watchDay(year: string, day: string) {
 			log.info("Closing Watcher...");
 		},
 	});
+}
+
+async function getChangedDays() {
+	const repositoryRoot = path.resolve(FileManager.__dirname, "..");
+	const { files } = await simpleGit(repositoryRoot).status([
+		"--untracked-files=all",
+		"--",
+		"solutions",
+	]);
+	const changedDays = new Set<string>();
+
+	for (const file of files) {
+		addSolutionDay(file.path, changedDays);
+		if (file.from) {
+			addSolutionDay(file.from, changedDays);
+		}
+	}
+
+	return changedDays;
+}
+
+function addSolutionDay(filePath: string, changedDays: Set<string>) {
+	const pathParts = filePath.split(path.sep);
+
+	if (pathParts.length >= 3 && pathParts[0] === "solutions") {
+		changedDays.add(`${pathParts[1]}/${pathParts[2]}`);
+	}
 }

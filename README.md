@@ -9,3 +9,9 @@ my solutions for the [Advent of Code](https://adventofcode.com/) puzzles
 ```bash
 $ nr cli
 ```
+
+Run only solutions with uncommitted changes:
+
+```bash
+$ nr cli run --changed
+```

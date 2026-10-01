@@ -20,6 +20,7 @@ export interface CLIFlags {
 	day: string;
 	watch: boolean;
 	runall: boolean;
+	changed: boolean;
 }
 
 async function cli() {
@@ -60,12 +61,21 @@ async function cli() {
 				.argParser((arg) => !!arg && arg !== "false")
 				.conflicts(["year", "day", "watch"]),
 		)
+		.addOption(
+			new Option("-c, --changed", "Run only solutions with uncommitted changes").conflicts([
+				"year",
+				"day",
+				"watch",
+				"runall",
+			]),
+		)
 		.action((options) => {
 			main({
 				mode: options.watch ? modes.WATCH_TEST : modes.RUN_TEST,
 				year: options.year,
 				day: options.day,
 				runall: options.runall,
+				changed: options.changed,
 			});
 		});
 
@@ -79,11 +89,11 @@ async function main(args: Partial<CLIFlags>) {
 
 	switch (mode) {
 		case modes.RUN_TEST: {
-			if (args.runall) {
+			if (args.runall || args.changed) {
 				try {
-					await runAllDays();
+					await runAllDays({ changedOnly: args.changed });
 				} catch {
-					log.error("Failed to run all days!");
+					log.error(args.changed ? "Failed to run changed days!" : "Failed to run all days!");
 				}
 				break;
 			}

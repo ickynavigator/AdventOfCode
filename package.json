@@ -18,7 +18,8 @@
     "dependencies": {
         "@clack/prompts": "^1.8.1",
         "chokidar": "^5.0.0",
-        "commander": "^15.0.0"
+        "commander": "^15.0.0",
+        "simple-git": "^4.0.2"
     },
     "devEngines": {
         "runtime": {
