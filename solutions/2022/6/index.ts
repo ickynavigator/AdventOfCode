@@ -1,5 +1,10 @@
 // https://adventofcode.com/2022/day/6
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 6: Tuning Trouble ---
 // The preparations are finally complete; you and the Elves leave camp on foot and begin to make your way toward the star fruit grove.
@@ -32,23 +37,23 @@ const input = await Deno.readTextFile('./input.txt');
 // How many characters need to be processed before the first start-of-packet marker is detected?
 
 const PartOne = (input: string) => {
-  const bufferArray = input.split('\n');
-  bufferArray.forEach(item => {
-    const buffer: string[] = [];
-    let counter = 0;
-    const SOPmarker = 4;
+	const bufferArray = input.split("\n");
+	bufferArray.forEach((item) => {
+		const buffer: string[] = [];
+		let counter = 0;
+		const SOPmarker = 4;
 
-    for (const char of item) {
-      counter++;
-      buffer.push(char);
-      if (buffer.length > SOPmarker) {
-        buffer.shift();
-      }
-      if (buffer.length === SOPmarker && new Set(buffer).size === SOPmarker) {
-        return console.log(counter);
-      }
-    }
-  });
+		for (const char of item) {
+			counter++;
+			buffer.push(char);
+			if (buffer.length > SOPmarker) {
+				buffer.shift();
+			}
+			if (buffer.length === SOPmarker && new Set(buffer).size === SOPmarker) {
+				return console.log(counter);
+			}
+		}
+	});
 };
 PartOne(input);
 
@@ -67,22 +72,22 @@ PartOne(input);
 // How many characters need to be processed before the first start-of-message marker is detected?
 
 const PartTwo = (input: string) => {
-  const bufferArray = input.split('\n');
-  bufferArray.forEach(item => {
-    const buffer: string[] = [];
-    let counter = 0;
-    const SOMmarker = 14;
+	const bufferArray = input.split("\n");
+	bufferArray.forEach((item) => {
+		const buffer: string[] = [];
+		let counter = 0;
+		const SOMmarker = 14;
 
-    for (const char of item) {
-      counter++;
-      buffer.push(char);
-      if (buffer.length > SOMmarker) {
-        buffer.shift();
-      }
-      if (buffer.length === SOMmarker && new Set(buffer).size === SOMmarker) {
-        return console.log(counter);
-      }
-    }
-  });
+		for (const char of item) {
+			counter++;
+			buffer.push(char);
+			if (buffer.length > SOMmarker) {
+				buffer.shift();
+			}
+			if (buffer.length === SOMmarker && new Set(buffer).size === SOMmarker) {
+				return console.log(counter);
+			}
+		}
+	});
 };
 PartTwo(input);

@@ -1,5 +1,10 @@
 // https://adventofcode.com/2022/day/2
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 2: Rock Paper Scissors ---
 // The Elves begin to set up camp on the beach. To decide whose tent gets to be closest to the snack storage, a giant Rock Paper Scissors tournament is already in progress.
@@ -28,62 +33,62 @@ const input = await Deno.readTextFile('./input.txt');
 
 // What would your total score be if everything goes exactly according to your strategy guide?
 
-type OPP = 'A' | 'B' | 'C';
-type PER = 'X' | 'Y' | 'Z';
+type OPP = "A" | "B" | "C";
+type PER = "X" | "Y" | "Z";
 
 const PartOne = (input: string) => {
-  const GamesArray = input.split('\n');
+	const GamesArray = input.split("\n");
 
-  let oppScore = 0;
-  let perScore = 0;
+	let oppScore = 0;
+	let perScore = 0;
 
-  GamesArray.forEach(game => {
-    const [opp, per] = game.split(' ') as [OPP, PER];
+	GamesArray.forEach((game) => {
+		const [opp, per] = game.split(" ") as [OPP, PER];
 
-    switch (opp) {
-      case 'A':
-        oppScore += 1;
-        break;
-      case 'B':
-        oppScore += 2;
-        break;
-      case 'C':
-        oppScore += 3;
-        break;
-    }
+		switch (opp) {
+			case "A":
+				oppScore += 1;
+				break;
+			case "B":
+				oppScore += 2;
+				break;
+			case "C":
+				oppScore += 3;
+				break;
+		}
 
-    switch (per) {
-      case 'X':
-        perScore += 1;
-        break;
-      case 'Y':
-        perScore += 2;
-        break;
-      case 'Z':
-        perScore += 3;
-        break;
-    }
+		switch (per) {
+			case "X":
+				perScore += 1;
+				break;
+			case "Y":
+				perScore += 2;
+				break;
+			case "Z":
+				perScore += 3;
+				break;
+		}
 
-    switch (per) {
-      case 'X':
-        if (opp === 'A') perScore += 3;
-        else if (opp === 'B') perScore += 0;
-        else if (opp === 'C') perScore += 6;
-        break;
-      case 'Y':
-        if (opp === 'A') perScore += 6;
-        else if (opp === 'B') perScore += 3;
-        else if (opp === 'C') perScore += 0;
-        break;
-      case 'Z':
-        if (opp === 'A') perScore += 0;
-        else if (opp === 'B') perScore += 6;
-        else if (opp === 'C') perScore += 3;
-        break;
-    }
-  });
+		switch (per) {
+			case "X":
+				if (opp === "A") perScore += 3;
+				else if (opp === "B") perScore += 0;
+				else if (opp === "C") perScore += 6;
+				break;
+			case "Y":
+				if (opp === "A") perScore += 6;
+				else if (opp === "B") perScore += 3;
+				else if (opp === "C") perScore += 0;
+				break;
+			case "Z":
+				if (opp === "A") perScore += 0;
+				else if (opp === "B") perScore += 6;
+				else if (opp === "C") perScore += 3;
+				break;
+		}
+	});
 
-  console.table({ oppScore, perScore });
+	console.table({ oppScore, perScore });
 };
 PartOne(input);
 
@@ -100,57 +105,57 @@ PartOne(input);
 // Following the Elf's instructions for the second column, what would your total score be if everything goes exactly according to your strategy guide?
 
 const PartTwo = (input: string) => {
-  const GamesArray = input.split('\n');
+	const GamesArray = input.split("\n");
 
-  let oppScore = 0;
-  let perScore = 0;
+	let oppScore = 0;
+	let perScore = 0;
 
-  GamesArray.forEach(game => {
-    const [opp, per] = game.split(' ') as [OPP, PER];
+	GamesArray.forEach((game) => {
+		const [opp, per] = game.split(" ") as [OPP, PER];
 
-    switch (opp) {
-      case 'A':
-        oppScore += 1;
-        break;
-      case 'B':
-        oppScore += 2;
-        break;
-      case 'C':
-        oppScore += 3;
-        break;
-    }
+		switch (opp) {
+			case "A":
+				oppScore += 1;
+				break;
+			case "B":
+				oppScore += 2;
+				break;
+			case "C":
+				oppScore += 3;
+				break;
+		}
 
-    switch (per) {
-      case 'X':
-        if (opp === 'A') perScore += 3;
-        else if (opp === 'B') perScore += 1;
-        else if (opp === 'C') perScore += 2;
-        break;
-      case 'Y':
-        if (opp === 'A') perScore += 1;
-        else if (opp === 'B') perScore += 2;
-        else if (opp === 'C') perScore += 3;
-        break;
-      case 'Z':
-        if (opp === 'A') perScore += 2;
-        else if (opp === 'B') perScore += 3;
-        else if (opp === 'C') perScore += 1;
-        break;
-    }
+		switch (per) {
+			case "X":
+				if (opp === "A") perScore += 3;
+				else if (opp === "B") perScore += 1;
+				else if (opp === "C") perScore += 2;
+				break;
+			case "Y":
+				if (opp === "A") perScore += 1;
+				else if (opp === "B") perScore += 2;
+				else if (opp === "C") perScore += 3;
+				break;
+			case "Z":
+				if (opp === "A") perScore += 2;
+				else if (opp === "B") perScore += 3;
+				else if (opp === "C") perScore += 1;
+				break;
+		}
 
-    switch (per) {
-      case 'X':
-        perScore += 0;
-        break;
-      case 'Y':
-        perScore += 3;
-        break;
-      case 'Z':
-        perScore += 6;
-        break;
-    }
-  });
+		switch (per) {
+			case "X":
+				perScore += 0;
+				break;
+			case "Y":
+				perScore += 3;
+				break;
+			case "Z":
+				perScore += 6;
+				break;
+		}
+	});
 
-  console.table({ oppScore, perScore });
+	console.table({ oppScore, perScore });
 };
 PartTwo(input);

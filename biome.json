@@ -1,11 +1,7 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
-		"ignore": [
-			"node_modules",
-			"*.json",
-			".cli/template"
-		]
+		"includes": ["**", "!**/node_modules", "!**/*.json", "!**/.cli/template"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -15,18 +11,21 @@
 		"lineEnding": "lf",
 		"lineWidth": 100
 	},
-	"organizeImports": {
-		"enabled": true
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": false,
+			"preset": "none",
 			"complexity": {
 				"noExtraBooleanCast": "error",
-				"noMultipleSpacesInRegularExpressionLiterals": "error",
 				"noUselessCatch": "error",
-				"noWith": "error"
+				"noAdjacentSpacesInRegex": "error"
 			},
 			"correctness": {
 				"noConstAssign": "error",
@@ -36,7 +35,6 @@
 				"noGlobalObjectCalls": "error",
 				"noInnerDeclarations": "error",
 				"noInvalidConstructorSuper": "error",
-				"noNewSymbol": "error",
 				"noNonoctalDecimalEscape": "error",
 				"noPrecisionLoss": "error",
 				"noSelfAssign": "error",
@@ -55,7 +53,9 @@
 				"useIsNan": "error",
 				"useJsxKeyInIterable": "error",
 				"useValidForDirection": "error",
-				"useYield": "error"
+				"useYield": "error",
+				"noInvalidBuiltinInstantiation": "error",
+				"useValidTypeof": "error"
 			},
 			"suspicious": {
 				"noAsyncPromiseExecutor": "error",
@@ -80,14 +80,10 @@
 				"noShadowRestrictedNames": "error",
 				"noUnsafeNegation": "error",
 				"useGetterReturn": "error",
-				"useValidTypeof": "error"
+				"noWith": "error"
 			}
 		},
-		"ignore": [
-			"**/*.cjs",
-			"**/*.mjs",
-			"**/*.js"
-		]
+		"includes": ["**", "!**/*.cjs", "!**/*.mjs", "!**/*.js"]
 	},
 	"javascript": {
 		"formatter": {

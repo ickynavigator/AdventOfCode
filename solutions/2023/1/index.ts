@@ -1,4 +1,9 @@
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 /**
     --- Day 1: Trebuchet?! ---
@@ -27,15 +32,15 @@ const input = await Deno.readTextFile('./input.txt');
     Consider your entire calibration document. What is the sum of all of the calibration values?
  */
 const PartOne = (input: string) => {
-  const calibrationArray = input.split('\n');
+	const calibrationArray = input.split("\n");
 
-  const val = calibrationArray.reduce((acc, cur) => {
-    const matches = cur.match(/\d/g);
-    const num = Number(`${matches?.[0]}${matches?.[matches.length - 1]}`);
-    return num + acc;
-  }, 0);
+	const val = calibrationArray.reduce((acc, cur) => {
+		const matches = cur.match(/\d/g);
+		const num = Number(`${matches?.[0]}${matches?.[matches.length - 1]}`);
+		return num + acc;
+	}, 0);
 
-  console.log(val);
+	console.log(val);
 };
 PartOne(input);
 
@@ -59,50 +64,48 @@ PartOne(input);
     What is the sum of all of the calibration values?
  */
 const PartTwo = (input: string) => {
-  const calibrationArray = input.split('\n');
+	const calibrationArray = input.split("\n");
 
-  const lookup = {
-    one: 1,
-    two: 2,
-    three: 3,
-    four: 4,
-    five: 5,
-    six: 6,
-    seven: 7,
-    eight: 8,
-    nine: 9,
-  };
+	const lookup = {
+		one: 1,
+		two: 2,
+		three: 3,
+		four: 4,
+		five: 5,
+		six: 6,
+		seven: 7,
+		eight: 8,
+		nine: 9,
+	};
 
-  const reg = new RegExp(
-    `${Object.keys(lookup)
-      .map(k => `(${k})`)
-      .join('|')}|\\d`,
-    'g',
-  );
+	const reg = new RegExp(
+		`${Object.keys(lookup)
+			.map((k) => `(${k})`)
+			.join("|")}|\\d`,
+		"g",
+	);
 
-  const parser = (num?: string) => {
-    return num ? lookup[num as keyof typeof lookup] ?? Number(num) : 0;
-  };
+	const parser = (num?: string) => {
+		return num ? (lookup[num as keyof typeof lookup] ?? Number(num)) : 0;
+	};
 
-  function matchOverlap(input: string, re: RegExp) {
-    const r = [];
-    let m;
+	function matchOverlap(input: string, re: RegExp) {
+		const r = [];
+		let m;
 
-    while ((m = re.exec(input))) {
-      re.lastIndex -= m[0].length - 1;
-      r.push(m[0]);
-    }
-    return r;
-  }
+		while ((m = re.exec(input))) {
+			re.lastIndex -= m[0].length - 1;
+			r.push(m[0]);
+		}
+		return r;
+	}
 
-  const val = calibrationArray.reduce((acc, cur) => {
-    const matches = matchOverlap(cur, reg);
-    const num = Number(
-      `${parser(matches?.[0])}${parser(matches?.[matches.length - 1])}`,
-    );
-    return num + acc;
-  }, 0);
+	const val = calibrationArray.reduce((acc, cur) => {
+		const matches = matchOverlap(cur, reg);
+		const num = Number(`${parser(matches?.[0])}${parser(matches?.[matches.length - 1])}`);
+		return num + acc;
+	}, 0);
 
-  console.log(val);
+	console.log(val);
 };
 PartTwo(input);

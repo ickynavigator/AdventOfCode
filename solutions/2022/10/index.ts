@@ -1,5 +1,10 @@
 // https://adventofcode.com/2022/day/10
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 10: Cathode-Ray Tube ---
 // You avoid the ropes, plunge into the river, and swim to shore.
@@ -190,43 +195,43 @@ const input = await Deno.readTextFile('./input.txt');
 
 // Find the signal strength during the 20th, 60th, 100th, 140th, 180th, and 220th cycles. What is the sum of these six signal strengths?
 
-enum Instruction {
-  addx = 'addx',
-  noop = 'noop',
-}
-type Command = [Instruction.noop] | [Instruction.addx, number];
+const Instruction = {
+	addx: "addx",
+	noop: "noop",
+} as const;
+type Command = [typeof Instruction.noop] | [typeof Instruction.addx, number];
 const PartOne = (input: string) => {
-  const instructionsArray = input.split('\r\n');
+	const instructionsArray = input.split(/\r?\n/);
 
-  let register = 1;
-  let cyclecheck = 20;
+	let register = 1;
+	let cyclecheck = 20;
 
-  const signalStrengths: number[] = [];
-  const instructionQueue: number[] = [];
+	const signalStrengths: number[] = [];
+	const instructionQueue: number[] = [];
 
-  for (let i = 0; i < instructionsArray.length; i++) {
-    const [instruction, cnt] = instructionsArray[i].split(' ') as Command;
+	for (let i = 0; i < instructionsArray.length; i++) {
+		const [instruction, cnt] = instructionsArray[i].split(" ") as Command;
 
-    if (instruction === Instruction.addx) {
-      instructionQueue.push(0);
-      instructionQueue.push(Number(cnt));
-    } else {
-      instructionQueue.push(0);
-    }
-  }
+		if (instruction === Instruction.addx) {
+			instructionQueue.push(0);
+			instructionQueue.push(Number(cnt));
+		} else {
+			instructionQueue.push(0);
+		}
+	}
 
-  for (let cycle = 0; cycle < instructionQueue.length; cycle++) {
-    if (cycle + 1 === cyclecheck) {
-      signalStrengths.push((cycle + 1) * register);
+	for (let cycle = 0; cycle < instructionQueue.length; cycle++) {
+		if (cycle + 1 === cyclecheck) {
+			signalStrengths.push((cycle + 1) * register);
 
-      cyclecheck += 40;
-    }
+			cyclecheck += 40;
+		}
 
-    register += instructionQueue[cycle];
-  }
+		register += instructionQueue[cycle];
+	}
 
-  const sum = signalStrengths.reduce((prev, curr) => prev + curr, 0);
-  console.log(sum);
+	const sum = signalStrengths.reduce((prev, curr) => prev + curr, 0);
+	console.log(sum);
 };
 PartOne(input);
 
@@ -353,47 +358,43 @@ PartOne(input);
 // #######.......#######.......#######.....
 // Render the image given by your program. What eight capital letters appear on your CRT?
 
-enum PixelType {
-  lit = '#',
-  //   used whitespace instead of . to make it easier to read
-  dark = ' ',
-}
+const PixelType = {
+	lit: "#",
+	//   used whitespace instead of . to make it easier to read
+	dark: " ",
+} as const;
 const PartTwo = (input: string) => {
-  const instructionsArray = input.split('\r\n');
+	const instructionsArray = input.split(/\r?\n/);
 
-  let register = 1;
+	let register = 1;
 
-  const instructionQueue: number[] = [];
+	const instructionQueue: number[] = [];
 
-  for (let i = 0; i < instructionsArray.length; i++) {
-    const [instruction, cnt] = instructionsArray[i].split(' ') as Command;
+	for (let i = 0; i < instructionsArray.length; i++) {
+		const [instruction, cnt] = instructionsArray[i].split(" ") as Command;
 
-    if (instruction === Instruction.addx) {
-      instructionQueue.push(0);
-      instructionQueue.push(Number(cnt));
-    } else {
-      instructionQueue.push(0);
-    }
-  }
+		if (instruction === Instruction.addx) {
+			instructionQueue.push(0);
+			instructionQueue.push(Number(cnt));
+		} else {
+			instructionQueue.push(0);
+		}
+	}
 
-  // define grid of 40x6
-  const CRT: string[][] = Array.from({ length: 6 }, () =>
-    new Array(40).fill(' '),
-  );
+	// define grid of 40x6
+	const CRT: string[][] = Array.from({ length: 6 }, () => new Array(40).fill(" "));
 
-  for (let cycle = 0; cycle < instructionQueue.length; cycle++) {
-    const [dx, dy] = [cycle % 40, Math.floor(cycle / 40)];
+	for (let cycle = 0; cycle < instructionQueue.length; cycle++) {
+		const [dx, dy] = [cycle % 40, Math.floor(cycle / 40)];
 
-    CRT[dy][dx] =
-      dx === register || dx === register - 1 || dx === register + 1
-        ? PixelType.lit
-        : ' ';
+		CRT[dy][dx] =
+			dx === register || dx === register - 1 || dx === register + 1 ? PixelType.lit : " ";
 
-    register += instructionQueue[cycle];
-  }
+		register += instructionQueue[cycle];
+	}
 
-  CRT.forEach(line => {
-    console.log(line.join(''));
-  });
+	CRT.forEach((line) => {
+		console.log(line.join(""));
+	});
 };
 PartTwo(input);

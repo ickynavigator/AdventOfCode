@@ -1,5 +1,10 @@
 // https://adventofcode.com/2022/day/9
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 9: Rope Bridge ---
 // This rope bridge creaks as you walk along it. You aren't sure how old it is, or whether it can even support your weight.
@@ -245,76 +250,76 @@ const input = await Deno.readTextFile('./input.txt');
 type Move = { direction: string; distance: number };
 type Piece = [number, number];
 const PartOne = (input: string) => {
-  const movementArray = input.split('\r\n').map(line => {
-    const [direction, distance] = line.split(' ');
-    return { direction, distance: Number(distance) };
-  });
+	const movementArray = input.split(/\r?\n/).map((line) => {
+		const [direction, distance] = line.split(" ");
+		return { direction, distance: Number(distance) };
+	});
 
-  const updateHead = (head: Piece, movement: Move): Piece => {
-    let [x, y] = head;
+	const updateHead = (head: Piece, movement: Move): Piece => {
+		let [x, y] = head;
 
-    switch (movement.direction) {
-      case 'U':
-        y += movement.distance;
-        break;
-      case 'D':
-        y -= movement.distance;
-        break;
-      case 'L':
-        x -= movement.distance;
-        break;
-      case 'R':
-        x += movement.distance;
-        break;
-    }
-    return [x, y];
-  };
+		switch (movement.direction) {
+			case "U":
+				y += movement.distance;
+				break;
+			case "D":
+				y -= movement.distance;
+				break;
+			case "L":
+				x -= movement.distance;
+				break;
+			case "R":
+				x += movement.distance;
+				break;
+		}
+		return [x, y];
+	};
 
-  const updateTail = (head: Piece, tail: Piece): [Piece, Piece[]] => {
-    const [hx, hy] = head;
-    let [tx, ty] = tail;
+	const updateTail = (head: Piece, tail: Piece): [Piece, Piece[]] => {
+		const [hx, hy] = head;
+		let [tx, ty] = tail;
 
-    const points = new Set<Piece>();
+		const points = new Set<Piece>();
 
-    let lastPoint: Piece = [tx, ty];
+		let lastPoint: Piece = [tx, ty];
 
-    while (tx !== hx || ty !== hy) {
-      lastPoint = [tx, ty];
-      points.add([tx, ty]);
+		while (tx !== hx || ty !== hy) {
+			lastPoint = [tx, ty];
+			points.add([tx, ty]);
 
-      if (tx < hx) {
-        tx++;
-      } else if (tx > hx) {
-        tx--;
-      }
+			if (tx < hx) {
+				tx++;
+			} else if (tx > hx) {
+				tx--;
+			}
 
-      if (ty < hy) {
-        ty++;
-      } else if (ty > hy) {
-        ty--;
-      }
-    }
+			if (ty < hy) {
+				ty++;
+			} else if (ty > hy) {
+				ty--;
+			}
+		}
 
-    return [lastPoint, Array.from(points)];
-  };
+		return [lastPoint, Array.from(points)];
+	};
 
-  let head: Piece = [0, 0];
-  let tail: Piece = [0, 0];
+	let head: Piece = [0, 0];
+	let tail: Piece = [0, 0];
 
-  const visited = new Set();
-  visited.add(head.join(','));
+	const visited = new Set();
+	visited.add(head.join(","));
 
-  for (let i = 0; i < movementArray.length; i++) {
-    const movement = movementArray[i];
+	for (let i = 0; i < movementArray.length; i++) {
+		const movement = movementArray[i];
 
-    head = updateHead(head, movement);
-    const [newTail, points] = updateTail(head, tail);
+		head = updateHead(head, movement);
+		const [newTail, points] = updateTail(head, tail);
 
-    tail = newTail;
-    points.forEach(point => visited.add(point.join(',')));
-  }
+		tail = newTail;
+		points.forEach((point) => visited.add(point.join(",")));
+	}
 
-  console.log(visited.size);
+	console.log(visited.size);
 };
 
 PartOne(input);
@@ -752,68 +757,68 @@ PartOne(input);
 
 // type Piece2 = { x: number; y: number };
 const PartTwo = (input: string) => {
-  const movementArray = input.split('\r\n').map(line => {
-    const [direction, distance] = line.split(' ');
-    return { direction, distance: Number(distance) };
-  });
+	const movementArray = input.split(/\r?\n/).map((line) => {
+		const [direction, distance] = line.split(" ");
+		return { direction, distance: Number(distance) };
+	});
 
-  const ropes: Piece[] = [
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-    [0, 0],
-  ];
+	const ropes: Piece[] = [
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+	];
 
-  const updateHead = (head: Piece, movement: Move): Piece => {
-    let [x, y] = head;
+	const updateHead = (head: Piece, movement: Move): Piece => {
+		let [x, y] = head;
 
-    switch (movement.direction) {
-      case 'U':
-        y++;
-        break;
-      case 'D':
-        y--;
-        break;
-      case 'L':
-        x--;
-        break;
-      case 'R':
-        x++;
-        break;
-    }
+		switch (movement.direction) {
+			case "U":
+				y++;
+				break;
+			case "D":
+				y--;
+				break;
+			case "L":
+				x--;
+				break;
+			case "R":
+				x++;
+				break;
+		}
 
-    return [x, y];
-  };
+		return [x, y];
+	};
 
-  const visited = new Set<string>();
+	const visited = new Set<string>();
 
-  for (let i = 0; i < movementArray.length; i++) {
-    for (let moved = 0; moved < movementArray[i].distance; moved++) {
-      ropes[0] = updateHead(ropes[0], movementArray[i]);
+	for (let i = 0; i < movementArray.length; i++) {
+		for (let moved = 0; moved < movementArray[i].distance; moved++) {
+			ropes[0] = updateHead(ropes[0], movementArray[i]);
 
-      for (let knot = 0; knot < ropes.length - 1; knot++) {
-        const x = ropes[knot][0] - ropes[knot + 1][0];
-        const y = ropes[knot][1] - ropes[knot + 1][1];
+			for (let knot = 0; knot < ropes.length - 1; knot++) {
+				const x = ropes[knot][0] - ropes[knot + 1][0];
+				const y = ropes[knot][1] - ropes[knot + 1][1];
 
-        if (Math.abs(x) > 1) {
-          ropes[knot + 1][0] += x > 0 ? 1 : -1;
-          if (Math.abs(y) != 0) ropes[knot + 1][1] += y > 0 ? 1 : -1;
-        } else if (Math.abs(y) > 1) {
-          ropes[knot + 1][1] += y > 0 ? 1 : -1;
-          if (Math.abs(x) != 0) ropes[knot + 1][0] += x > 0 ? 1 : -1;
-        }
-      }
+				if (Math.abs(x) > 1) {
+					ropes[knot + 1][0] += x > 0 ? 1 : -1;
+					if (Math.abs(y) != 0) ropes[knot + 1][1] += y > 0 ? 1 : -1;
+				} else if (Math.abs(y) > 1) {
+					ropes[knot + 1][1] += y > 0 ? 1 : -1;
+					if (Math.abs(x) != 0) ropes[knot + 1][0] += x > 0 ? 1 : -1;
+				}
+			}
 
-      visited.add(`${ropes[9][0]},${ropes[9][1]}`);
-    }
-  }
+			visited.add(`${ropes[9][0]},${ropes[9][1]}`);
+		}
+	}
 
-  console.log(visited.size);
+	console.log(visited.size);
 };
 PartTwo(input);

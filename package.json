@@ -4,19 +4,32 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-        "cli": "tsx ./.cli/index.ts"
+        "cli": "node ./.cli/index.ts",
+        "typecheck": "tsc --project tsconfig.json --noEmit",
+        "lint": "biome check",
+        "lint:fix": "biome check --write"
     },
     "devDependencies": {
-        "@biomejs/biome": "^1.8.3",
+        "@biomejs/biome": "^2.5.14",
         "@total-typescript/tsconfig": "^1.0.4",
-        "@types/node": "^20.11.1",
-        "typescript": "^5.5.4"
+        "@types/node": "^26.6.3",
+        "typescript": "^7.0.2"
     },
     "dependencies": {
-        "@clack/prompts": "^0.7.0",
-        "chokidar": "^3.6.0",
-        "commander": "^12.1.0",
-        "tsx": "^4.17.0"
+        "@clack/prompts": "^1.8.1",
+        "chokidar": "^5.0.0",
+        "commander": "^15.0.0"
     },
-    "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"
+    "devEngines": {
+        "runtime": {
+            "name": "node",
+            "version": "26.10.0",
+            "onFail": "error"
+        },
+        "packageManager": {
+            "name": "pnpm",
+            "version": "12.8.1",
+            "onFail": "download"
+        }
+    }
 }

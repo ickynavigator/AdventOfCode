@@ -1,4 +1,9 @@
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 8: Treetop Tree House ---
 // The expedition comes across a peculiar patch of tall trees all planted carefully in a grid. The Elves explain that a previous expedition planted these trees as a reforestation effort. Now, they're curious if this would be a good location for a tree house.
@@ -29,76 +34,74 @@ const input = await Deno.readTextFile('./input.txt');
 
 // Consider your map; how many trees are visible from outside the grid?
 const PartOne = (input: string) => {
-  const treeGrid = input
-    .split('\r\n')
-    .map(x => x.split('').map(x => parseInt(x)));
+	const treeGrid = input.split("\r?\n").map((x) => x.split("").map((x) => parseInt(x)));
 
-  let visible = 0;
+	let visible = 0;
 
-  const checkMatch = (items: number[], matches: number[]) => {
-    return items.filter(item => matches.includes(item)).length > 0;
-  };
-  const checkGrid = (tree: number, x: number, y: number) => {
-    let visible = true;
-    for (let j = 0; j < x; j++) {
-      const num = treeGrid[j][y];
-      if (j === x) continue;
-      if (num >= tree) visible = false;
-    }
-    if (visible) return true;
+	const checkMatch = (items: number[], matches: number[]) => {
+		return items.filter((item) => matches.includes(item)).length > 0;
+	};
+	const checkGrid = (tree: number, x: number, y: number) => {
+		let visible = true;
+		for (let j = 0; j < x; j++) {
+			const num = treeGrid[j][y];
+			if (j === x) continue;
+			if (num >= tree) visible = false;
+		}
+		if (visible) return true;
 
-    visible = true;
-    for (let j = x; j < treeGrid.length; j++) {
-      const num = treeGrid[j][y];
-      if (j === x) continue;
-      if (num >= tree) visible = false;
-    }
-    if (visible) return true;
+		visible = true;
+		for (let j = x; j < treeGrid.length; j++) {
+			const num = treeGrid[j][y];
+			if (j === x) continue;
+			if (num >= tree) visible = false;
+		}
+		if (visible) return true;
 
-    visible = true;
-    for (let k = 0; k < y; k++) {
-      const num = treeGrid[x][k];
-      if (k === y) continue;
-      if (num >= tree) visible = false;
-    }
-    if (visible) return true;
+		visible = true;
+		for (let k = 0; k < y; k++) {
+			const num = treeGrid[x][k];
+			if (k === y) continue;
+			if (num >= tree) visible = false;
+		}
+		if (visible) return true;
 
-    visible = true;
-    for (let k = y; k < treeGrid[x].length; k++) {
-      const num = treeGrid[x][k];
-      if (k === y) continue;
-      if (num >= tree) visible = false;
-    }
-    if (visible) return true;
+		visible = true;
+		for (let k = y; k < treeGrid[x].length; k++) {
+			const num = treeGrid[x][k];
+			if (k === y) continue;
+			if (num >= tree) visible = false;
+		}
+		if (visible) return true;
 
-    return false;
-  };
+		return false;
+	};
 
-  treeGrid.forEach((treeRow, rowNum) => {
-    treeRow.forEach((tree, ind) => {
-      const edges = [rowNum - 1, rowNum + 1, ind - 1, ind + 1];
-      const [up, down, left, right] = edges;
-      //   const surround = [
-      //     treeGrid[up]?.[ind],
-      //     treeGrid[down]?.[ind],
-      //     treeGrid[rowNum]?.[left],
-      //     treeGrid[rowNum]?.[right],
-      //   ];
+	treeGrid.forEach((treeRow, rowNum) => {
+		treeRow.forEach((tree, ind) => {
+			const edges = [rowNum - 1, rowNum + 1, ind - 1, ind + 1];
+			const [up, down, left, right] = edges;
+			//   const surround = [
+			//     treeGrid[up]?.[ind],
+			//     treeGrid[down]?.[ind],
+			//     treeGrid[rowNum]?.[left],
+			//     treeGrid[rowNum]?.[right],
+			//   ];
 
-      if (
-        checkMatch([up, down], [-1, treeGrid.length]) ||
-        checkMatch([left, right], [-1, treeGrid[0].length])
-      ) {
-        return visible++;
-      }
+			if (
+				checkMatch([up, down], [-1, treeGrid.length]) ||
+				checkMatch([left, right], [-1, treeGrid[0].length])
+			) {
+				return visible++;
+			}
 
-      if (checkGrid(tree, rowNum, ind)) {
-        return visible++;
-      }
-    });
-  });
+			if (checkGrid(tree, rowNum, ind)) {
+				return visible++;
+			}
+		});
+	});
 
-  console.log('visible:', visible);
+	console.log("visible:", visible);
 };
 PartOne(input);
 
@@ -137,53 +140,51 @@ PartOne(input);
 
 // Consider each tree on your map. What is the highest scenic score possible for any tree?
 const PartTwo = (input: string) => {
-  const treeGrid = input
-    .split('\r\n')
-    .map(x => x.split('').map(x => parseInt(x)));
+	const treeGrid = input.split("\r?\n").map((x) => x.split("").map((x) => parseInt(x)));
 
-  const checkGrid = (tree: number, x: number, y: number): number => {
-    let up = 0;
-    let down = 0;
-    let left = 0;
-    let right = 0;
+	const checkGrid = (tree: number, x: number, y: number): number => {
+		let up = 0;
+		let down = 0;
+		let left = 0;
+		let right = 0;
 
-    for (let j = x - 1; j >= 0; j--) {
-      const num = treeGrid[j][y];
-      up++;
-      if (num >= tree) break;
-    }
+		for (let j = x - 1; j >= 0; j--) {
+			const num = treeGrid[j][y];
+			up++;
+			if (num >= tree) break;
+		}
 
-    for (let j = x + 1; j < treeGrid.length; j++) {
-      const num = treeGrid[j][y];
-      down++;
-      if (num >= tree) break;
-    }
+		for (let j = x + 1; j < treeGrid.length; j++) {
+			const num = treeGrid[j][y];
+			down++;
+			if (num >= tree) break;
+		}
 
-    for (let k = y - 1; k >= 0; k--) {
-      const num = treeGrid[x][k];
-      left++;
-      if (num >= tree) break;
-    }
+		for (let k = y - 1; k >= 0; k--) {
+			const num = treeGrid[x][k];
+			left++;
+			if (num >= tree) break;
+		}
 
-    for (let k = y + 1; k < treeGrid[x].length; k++) {
-      const num = treeGrid[x][k];
-      right++;
-      if (num >= tree) break;
-    }
+		for (let k = y + 1; k < treeGrid[x].length; k++) {
+			const num = treeGrid[x][k];
+			right++;
+			if (num >= tree) break;
+		}
 
-    return up * down * left * right;
-  };
+		return up * down * left * right;
+	};
 
-  let highestScenic = 0;
-  treeGrid.forEach((treeRow, rowNum) => {
-    treeRow.forEach((tree, ind) => {
-      const currScenic = checkGrid(tree, rowNum, ind);
-      if (currScenic > highestScenic) {
-        highestScenic = currScenic;
-      }
-    });
-  });
+	let highestScenic = 0;
+	treeGrid.forEach((treeRow, rowNum) => {
+		treeRow.forEach((tree, ind) => {
+			const currScenic = checkGrid(tree, rowNum, ind);
+			if (currScenic > highestScenic) {
+				highestScenic = currScenic;
+			}
+		});
+	});
 
-  console.log('highestScenic:', highestScenic);
+	console.log("highestScenic:", highestScenic);
 };
 PartTwo(input);

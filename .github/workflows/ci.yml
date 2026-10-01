@@ -1,0 +1,156 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    typecheck:
+        name: Typecheck
+        runs-on: ubuntu-26.04
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - uses: pnpm/setup@v3
+              name: Install pnpm
+              with:
+                  cache: true
+
+            - name: Run Typecheck
+              run: |
+                  pnpm run typecheck
+
+    lint:
+        name: Lint
+        runs-on: ubuntu-26.04
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - uses: pnpm/setup@v3
+              name: Install pnpm
+              with:
+                  cache: true
+
+            - name: Setup Biome
+              uses: biomejs/setup-biome@v2
+
+            - name: Run Lint
+              run: |
+                  biome ci
+
+    discover:
+        name: Discover Days
+        runs-on: ubuntu-26.04
+        outputs:
+            years: ${{ steps.set-matrix.outputs.years }}
+            matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - uses: pnpm/setup@v3
+              name: Install pnpm
+
+            - name: Build matrix of days grouped by year
+              id: set-matrix
+              run: |
+                  node -e '
+                    const fs = require("node:fs");
+                    const path = require("node:path");
+                    const root = "solutions";
+                    const byYear = {};
+                    for (const year of fs.readdirSync(root)) {
+                      const yearPath = path.join(root, year);
+                      if (!fs.statSync(yearPath).isDirectory()) continue;
+                      const days = fs.readdirSync(yearPath)
+                        .filter((day) => fs.existsSync(path.join(yearPath, day, "index.ts")))
+                        .sort((a, b) => Number(a) - Number(b));
+                      if (days.length > 0) byYear[year] = days;
+                    }
+                    fs.writeFileSync("matrix.json", JSON.stringify(byYear));
+                  '
+                  matrix=$(cat matrix.json)
+                  years=$(node -e 'console.log(JSON.stringify(Object.keys(require("./matrix.json"))))')
+                  echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+                  echo "years=$years" >> "$GITHUB_OUTPUT"
+                  rm matrix.json
+
+    # Each year is dispatched as its own call to the reusable test-year.yml
+    # workflow, so GitHub groups every year's days into its own collapsible
+    # section automatically — no manual job needed when a new year is added.
+    test:
+        name: Year ${{ matrix.year }}
+        needs: discover
+        strategy:
+            fail-fast: false
+            matrix:
+                year: ${{ fromJson(needs.discover.outputs.years) }}
+        uses: ./.github/workflows/test-year.yml
+        with:
+            year: ${{ matrix.year }}
+            days: ${{ toJson(fromJson(needs.discover.outputs.matrix)[matrix.year]) }}
+
+    summary:
+        name: Test Summary
+        needs: test
+        if: always()
+        runs-on: ubuntu-26.04
+        permissions:
+            actions: read
+            contents: read
+
+        steps:
+            - name: Build consolidated day/year summary
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        run_id: context.runId,
+                        per_page: 100,
+                      });
+
+                      const dayJobRegex = /^Year (\d+) \/ Day (\d+)$/;
+                      const byYear = {};
+                      for (const job of jobs) {
+                        const match = job.name.match(dayJobRegex);
+                        if (!match) continue;
+                        const [, year, day] = match;
+                        (byYear[year] ??= []).push({ day: Number(day), conclusion: job.conclusion });
+                      }
+
+                      const icon = (conclusion) =>
+                        conclusion === "success" ? "✅" : conclusion === "skipped" ? "⏭️" : "❌";
+
+                      let passed = 0;
+                      let total = 0;
+                      const lines = ["## Day Test Results", ""];
+                      for (const year of Object.keys(byYear).sort()) {
+                        const days = byYear[year].sort((a, b) => a.day - b.day);
+                        lines.push(`### ${year}`, "", "| Day | Result |", "| --- | --- |");
+                        for (const { day, conclusion } of days) {
+                          lines.push(`| ${day} | ${icon(conclusion)} ${conclusion} |`);
+                          total += 1;
+                          if (conclusion === "success") passed += 1;
+                        }
+                        lines.push("");
+                      }
+                      lines.splice(2, 0, `${passed}/${total} days passing`, "");
+
+                      await core.summary.addRaw(lines.join("\n")).write();

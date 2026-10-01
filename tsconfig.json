@@ -1,7 +1,16 @@
 {
   "extends": "@total-typescript/tsconfig/tsc/no-dom/app",
+  "include": [
+    "./.cli/**/*.ts",
+    "./solutions/**/*.ts"
+  ],
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
+    "allowImportingTsExtensions": true,
     "noUncheckedIndexedAccess": false,
+    "types": [
+      "node"
+    ],
     "lib": [
       "ESNext"
     ]

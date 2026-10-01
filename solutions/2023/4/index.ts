@@ -1,4 +1,9 @@
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 /**
 --- Day 4: Scratchcards ---
@@ -39,33 +44,33 @@ So, in this example, the Elf's pile of scratchcards is worth 13 points.
 Take a seat in the large pile of colorful cards. How many points are they worth in total?
  */
 const PartOne = (input: string) => {
-  const inputArr = input.split('\n');
-  let score = 0;
+	const inputArr = input.split("\n");
+	let score = 0;
 
-  const contains = (x: string[], y: string[]) => {
-    let cnt = 0;
-    x.forEach(a => {
-      if (y.includes(a)) cnt++;
-    });
-    return cnt;
-  };
+	const contains = (x: string[], y: string[]) => {
+		let cnt = 0;
+		x.forEach((a) => {
+			if (y.includes(a)) cnt++;
+		});
+		return cnt;
+	};
 
-  const counter = (pts = 0) => {
-    let s = 1;
-    for (let i = 0; i <= pts - 2; i++) s *= 2;
-    return s;
-  };
+	const counter = (pts = 0) => {
+		let s = 1;
+		for (let i = 0; i <= pts - 2; i++) s *= 2;
+		return s;
+	};
 
-  inputArr.forEach(i => {
-    const [wins, ents] = i
-      .split(':')[1]
-      .split('|')
-      .map(c => c.trim().split(/\s+/));
-    const valid = contains(wins, ents);
-    if (valid !== 0) score += counter(valid);
-  });
+	inputArr.forEach((i) => {
+		const [wins, ents] = i
+			.split(":")[1]
+			.split("|")
+			.map((c) => c.trim().split(/\s+/));
+		const valid = contains(wins, ents);
+		if (valid !== 0) score += counter(valid);
+	});
 
-  console.log(score);
+	console.log(score);
 };
 PartOne(input);
 
@@ -102,32 +107,31 @@ Once all of the originals and copies have been processed, you end up with 1 inst
 Process all of the original and copied scratchcards until no more scratchcards are won. Including the original set of scratchcards, how many total scratchcards do you end up with?
  */
 const PartTwo = (input: string) => {
-  const inputArr = input.split('\n');
-  const cnt = Array.from({ length: inputArr.length }, () => 1);
-  const copies = Array.from({ length: inputArr.length }, () => 1);
+	const inputArr = input.split("\n");
+	const cnt = Array.from({ length: inputArr.length }, () => 1);
+	const copies = Array.from({ length: inputArr.length }, () => 1);
 
-  const contains = (x: string[], y: string[]) => {
-    let cnt = 0;
-    x.forEach(a => {
-      if (y.includes(a)) cnt++;
-    });
-    return cnt;
-  };
+	const contains = (x: string[], y: string[]) => {
+		let cnt = 0;
+		x.forEach((a) => {
+			if (y.includes(a)) cnt++;
+		});
+		return cnt;
+	};
 
-  inputArr.forEach((i, ind) => {
-    const [wins, ents] = i
-      .split(':')[1]
-      .split('|')
-      .map(c => c.trim().split(/\s+/));
-    cnt[ind] = contains(wins, ents);
-  });
+	inputArr.forEach((i, ind) => {
+		const [wins, ents] = i
+			.split(":")[1]
+			.split("|")
+			.map((c) => c.trim().split(/\s+/));
+		cnt[ind] = contains(wins, ents);
+	});
 
-  for (let c = 0; c < copies.length; c++)
-    for (let j = 0; j < copies[c]; j++)
-      for (let i = c + 1; i <= c + cnt[c]; i++) copies[i] += 1;
+	for (let c = 0; c < copies.length; c++)
+		for (let j = 0; j < copies[c]; j++) for (let i = c + 1; i <= c + cnt[c]; i++) copies[i] += 1;
 
-  const score = copies.reduce((p, c) => p + c);
+	const score = copies.reduce((p, c) => p + c);
 
-  console.log(score);
+	console.log(score);
 };
 PartTwo(input);

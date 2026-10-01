@@ -1,5 +1,10 @@
 // straight up lifted this code from Theo(T3/ping) and i do not plan to attempt it anytime soon
-const input = await Deno.readTextFile('./input.txt');
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 12: Hill Climbing Algorithm ---
 // You try contacting the Elves using your handheld device, but the river you're following must be too low to get a decent signal.
@@ -31,111 +36,111 @@ const input = await Deno.readTextFile('./input.txt');
 // What is the fewest steps required to move from your current position to the location that should get the best signal?
 
 const letterToNumber = {
-  a: 1,
-  b: 2,
-  c: 3,
-  d: 4,
-  e: 5,
-  f: 6,
-  g: 7,
-  h: 8,
-  i: 9,
-  j: 10,
-  k: 11,
-  l: 12,
-  m: 13,
-  n: 14,
-  o: 15,
-  p: 16,
-  q: 17,
-  r: 18,
-  s: 19,
-  t: 20,
-  u: 21,
-  v: 22,
-  w: 23,
-  x: 24,
-  y: 25,
-  z: 26,
+	a: 1,
+	b: 2,
+	c: 3,
+	d: 4,
+	e: 5,
+	f: 6,
+	g: 7,
+	h: 8,
+	i: 9,
+	j: 10,
+	k: 11,
+	l: 12,
+	m: 13,
+	n: 14,
+	o: 15,
+	p: 16,
+	q: 17,
+	r: 18,
+	s: 19,
+	t: 20,
+	u: 21,
+	v: 22,
+	w: 23,
+	x: 24,
+	y: 25,
+	z: 26,
 
-  S: 1,
-  E: 26,
+	S: 1,
+	E: 26,
 };
 type Point = { x: number; y: number };
 const PartOne = (input: string) => {
-  const grid = input.split('\n').map(r => r.split(''));
+	const grid = input.split("\n").map((r) => r.split(""));
 
-  let start = { x: 0, y: 0 };
-  let end = { x: 0, y: 0 };
+	let start = { x: 0, y: 0 };
+	let end = { x: 0, y: 0 };
 
-  for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid[y].length; x++) {
-      const tile = grid[y][x];
-      if (tile === 'S') start = { x, y };
-      if (tile === 'E') end = { x, y };
-    }
-  }
+	for (let y = 0; y < grid.length; y++) {
+		for (let x = 0; x < grid[y].length; x++) {
+			const tile = grid[y][x];
+			if (tile === "S") start = { x, y };
+			if (tile === "E") end = { x, y };
+		}
+	}
 
-  const numberGrid = grid.map(row =>
-    row.map(tile => letterToNumber[tile as keyof typeof letterToNumber]),
-  );
+	const numberGrid = grid.map((row) =>
+		row.map((tile) => letterToNumber[tile as keyof typeof letterToNumber]),
+	);
 
-  const allValidMoves = (point: Point) => {
-    const { x, y } = point;
+	const allValidMoves = (point: Point) => {
+		const { x, y } = point;
 
-    const elevation = numberGrid[y][x];
+		const elevation = numberGrid[y][x];
 
-    const allMoves = [
-      { x: x - 1, y },
-      { x: x + 1, y },
-      { x, y: y - 1 },
-      { x, y: y + 1 },
-    ];
+		const allMoves = [
+			{ x: x - 1, y },
+			{ x: x + 1, y },
+			{ x, y: y - 1 },
+			{ x, y: y + 1 },
+		];
 
-    return allMoves.filter(move => {
-      const { x: x2, y: y2 } = move;
+		return allMoves.filter((move) => {
+			const { x: x2, y: y2 } = move;
 
-      if (x2 < 0 || y2 < 0) return false;
-      if (x2 >= numberGrid[0].length || y2 >= numberGrid.length) return false;
+			if (x2 < 0 || y2 < 0) return false;
+			if (x2 >= numberGrid[0].length || y2 >= numberGrid.length) return false;
 
-      const elevation2 = numberGrid[y2][x2];
+			const elevation2 = numberGrid[y2][x2];
 
-      return elevation2 <= elevation + 1;
-    });
-  };
+			return elevation2 <= elevation + 1;
+		});
+	};
 
-  const allVisitedPoints: Set<string> = new Set([`${start.x},${start.y}`]);
+	const allVisitedPoints: Set<string> = new Set([`${start.x},${start.y}`]);
 
-  const pointToString = (point: Point) => `${point.x},${point.y}`;
+	const pointToString = (point: Point) => `${point.x},${point.y}`;
 
-  let incompletePaths: Point[][] = [[start]];
+	let incompletePaths: Point[][] = [[start]];
 
-  while (incompletePaths.length > 0) {
-    const newIncompletePaths: Point[][] = [];
+	while (incompletePaths.length > 0) {
+		const newIncompletePaths: Point[][] = [];
 
-    for (const incompletePath of incompletePaths) {
-      const lastPoint = incompletePath[incompletePath.length - 1];
-      const validMoves = allValidMoves(lastPoint);
+		for (const incompletePath of incompletePaths) {
+			const lastPoint = incompletePath[incompletePath.length - 1];
+			const validMoves = allValidMoves(lastPoint);
 
-      for (const move of validMoves) {
-        if (allVisitedPoints.has(pointToString(move))) continue;
+			for (const move of validMoves) {
+				if (allVisitedPoints.has(pointToString(move))) continue;
 
-        allVisitedPoints.add(pointToString(move));
+				allVisitedPoints.add(pointToString(move));
 
-        const newIncompletePath = [...incompletePath];
-        newIncompletePath.push(move);
+				const newIncompletePath = [...incompletePath];
+				newIncompletePath.push(move);
 
-        if (move.x === end.x && move.y === end.y) {
-          console.log('ANSWER FOUND', newIncompletePath.length - 1);
-          return;
-        } else {
-          newIncompletePaths.push(newIncompletePath);
-        }
-      }
-    }
+				if (move.x === end.x && move.y === end.y) {
+					console.log("ANSWER FOUND", newIncompletePath.length - 1);
+					return;
+				} else {
+					newIncompletePaths.push(newIncompletePath);
+				}
+			}
+		}
 
-    incompletePaths = newIncompletePaths;
-  }
+		incompletePaths = newIncompletePaths;
+	}
 };
 PartOne(input);
 
@@ -163,80 +168,80 @@ PartOne(input);
 // What is the fewest steps required to move starting from any square with elevation a to the location that should get the best signal?
 
 const PartTwo = (input: string) => {
-  const grid = input.split('\n').map(r => r.split(''));
+	const grid = input.split("\n").map((r) => r.split(""));
 
-  let start = { x: 0, y: 0 };
-  let end = { x: 0, y: 0 };
+	let start = { x: 0, y: 0 };
+	let end = { x: 0, y: 0 };
 
-  for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid[y].length; x++) {
-      const tile = grid[y][x];
-      if (tile === 'S') start = { x, y };
-      if (tile === 'E') end = { x, y };
-    }
-  }
+	for (let y = 0; y < grid.length; y++) {
+		for (let x = 0; x < grid[y].length; x++) {
+			const tile = grid[y][x];
+			if (tile === "S") start = { x, y };
+			if (tile === "E") end = { x, y };
+		}
+	}
 
-  const numberGrid = grid.map(row =>
-    row.map(tile => letterToNumber[tile as keyof typeof letterToNumber]),
-  );
+	const numberGrid = grid.map((row) =>
+		row.map((tile) => letterToNumber[tile as keyof typeof letterToNumber]),
+	);
 
-  const allValidMoves = (point: Point) => {
-    const { x, y } = point;
+	const allValidMoves = (point: Point) => {
+		const { x, y } = point;
 
-    const elevation = numberGrid[y][x];
+		const elevation = numberGrid[y][x];
 
-    const allMoves = [
-      { x: x - 1, y },
-      { x: x + 1, y },
-      { x, y: y - 1 },
-      { x, y: y + 1 },
-    ];
+		const allMoves = [
+			{ x: x - 1, y },
+			{ x: x + 1, y },
+			{ x, y: y - 1 },
+			{ x, y: y + 1 },
+		];
 
-    return allMoves.filter(move => {
-      const { x: x2, y: y2 } = move;
+		return allMoves.filter((move) => {
+			const { x: x2, y: y2 } = move;
 
-      if (x2 < 0 || y2 < 0) return false;
-      if (x2 >= numberGrid[0].length || y2 >= numberGrid.length) return false;
+			if (x2 < 0 || y2 < 0) return false;
+			if (x2 >= numberGrid[0].length || y2 >= numberGrid.length) return false;
 
-      const elevation2 = numberGrid[y2][x2];
+			const elevation2 = numberGrid[y2][x2];
 
-      return elevation2 >= elevation - 1;
-    });
-  };
+			return elevation2 >= elevation - 1;
+		});
+	};
 
-  const allVisitedPoints: Set<string> = new Set([`${start.x},${start.y}`]);
+	const allVisitedPoints: Set<string> = new Set([`${start.x},${start.y}`]);
 
-  const pointToString = (point: Point) => `${point.x},${point.y}`;
+	const pointToString = (point: Point) => `${point.x},${point.y}`;
 
-  let incompletePaths: Point[][] = [[end]];
+	let incompletePaths: Point[][] = [[end]];
 
-  while (incompletePaths.length > 0) {
-    const newIncompletePaths: Point[][] = [];
+	while (incompletePaths.length > 0) {
+		const newIncompletePaths: Point[][] = [];
 
-    for (const incompletePath of incompletePaths) {
-      const lastPoint = incompletePath[incompletePath.length - 1];
-      const validMoves = allValidMoves(lastPoint);
+		for (const incompletePath of incompletePaths) {
+			const lastPoint = incompletePath[incompletePath.length - 1];
+			const validMoves = allValidMoves(lastPoint);
 
-      for (const move of validMoves) {
-        if (allVisitedPoints.has(pointToString(move))) continue;
+			for (const move of validMoves) {
+				if (allVisitedPoints.has(pointToString(move))) continue;
 
-        allVisitedPoints.add(pointToString(move));
+				allVisitedPoints.add(pointToString(move));
 
-        const newIncompletePath = [...incompletePath];
-        newIncompletePath.push(move);
+				const newIncompletePath = [...incompletePath];
+				newIncompletePath.push(move);
 
-        const valAtPoint = numberGrid[move.y][move.x];
+				const valAtPoint = numberGrid[move.y][move.x];
 
-        if (valAtPoint === 1) {
-          console.log('ANSWER FOUND', newIncompletePath.length - 1);
-          return;
-        } else {
-          newIncompletePaths.push(newIncompletePath);
-        }
-      }
-    }
+				if (valAtPoint === 1) {
+					console.log("ANSWER FOUND", newIncompletePath.length - 1);
+					return;
+				} else {
+					newIncompletePaths.push(newIncompletePath);
+				}
+			}
+		}
 
-    incompletePaths = newIncompletePaths;
-  }
+		incompletePaths = newIncompletePaths;
+	}
 };
 PartTwo(input);
