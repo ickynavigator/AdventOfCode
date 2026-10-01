@@ -17,7 +17,7 @@ permissions:
 jobs:
     typecheck:
         name: Typecheck
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
 
         steps:
             - name: Checkout Repository
@@ -34,7 +34,7 @@ jobs:
 
     lint:
         name: Lint
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
 
         steps:
             - name: Checkout Repository
@@ -51,7 +51,7 @@ jobs:
 
     discover:
         name: Discover Days
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         outputs:
             years: ${{ steps.set-matrix.outputs.years }}
             matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -106,7 +106,7 @@ jobs:
         name: Test Summary
         needs: test
         if: always()
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-26.04
         permissions:
             actions: read
             contents: read
