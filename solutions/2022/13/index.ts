@@ -1,5 +1,7 @@
 // https://adventofcode.com/2022/day/13
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // --- Day 13: Distress Signal ---
 // You climb the hill and again try contacting the Elves. However, you instead receive a signal you weren't expecting: a distress signal.
@@ -111,55 +113,53 @@ const input = await Deno.readTextFile('./input.txt');
 // Determine which pairs of packets are already in the right order. What is the sum of the indices of those pairs?
 
 const PartOne = (input: string) => {
-  const Pairs = input
-    .split('\n\n')
-    .map(pair => pair.split('\n').map(x => eval(x) as number[]));
+	const Pairs = input.split("\n\n").map((pair) => pair.split("\n").map((x) => eval(x) as number[]));
 
-  const goodIndices: number[] = [];
+	const goodIndices: number[] = [];
 
-  const checkArray = (
-    left: number | number[] | number[][],
-    right: number | number[] | number[][],
-  ): boolean | undefined => {
-    if (Array.isArray(left) && Array.isArray(right)) {
-      for (let i = 0; i < left.length && i < right.length; i++) {
-        const check = checkArray(left[i], right[i]);
+	const checkArray = (
+		left: number | number[] | number[][],
+		right: number | number[] | number[][],
+	): boolean | undefined => {
+		if (Array.isArray(left) && Array.isArray(right)) {
+			for (let i = 0; i < left.length && i < right.length; i++) {
+				const check = checkArray(left[i], right[i]);
 
-        if (check !== undefined) return check;
-      }
+				if (check !== undefined) return check;
+			}
 
-      if (left.length !== right.length) return left.length < right.length;
-      return;
-    }
+			if (left.length !== right.length) return left.length < right.length;
+			return;
+		}
 
-    if (typeof left === 'number' && typeof right === 'number') {
-      if (left !== right) return left < right;
-      return;
-    }
+		if (typeof left === "number" && typeof right === "number") {
+			if (left !== right) return left < right;
+			return;
+		}
 
-    if (Array.isArray(left) && !Array.isArray(right)) {
-      right = [right];
-    }
+		if (Array.isArray(left) && !Array.isArray(right)) {
+			right = [right];
+		}
 
-    if (!Array.isArray(left) && Array.isArray(right)) {
-      left = [left];
-    }
+		if (!Array.isArray(left) && Array.isArray(right)) {
+			left = [left];
+		}
 
-    return checkArray(left, right);
-  };
+		return checkArray(left, right);
+	};
 
-  Pairs.forEach(([left, right], ind) => {
-    const valid = checkArray(left, right);
+	Pairs.forEach(([left, right], ind) => {
+		const valid = checkArray(left, right);
 
-    if (valid) {
-      goodIndices.push(ind + 1);
-    }
-  });
+		if (valid) {
+			goodIndices.push(ind + 1);
+		}
+	});
 
-  console.log(
-    `PartOne`,
-    goodIndices.reduce((a, b) => a + b, 0),
-  );
+	console.log(
+		`PartOne`,
+		goodIndices.reduce((a, b) => a + b, 0),
+	);
 };
 PartOne(input);
 
@@ -197,61 +197,59 @@ PartOne(input);
 // Organize all of the packets into the correct order. What is the decoder key for the distress signal?
 
 const PartTwo = (input: string) => {
-  const Pairs = input
-    .split('\n\n')
-    .map(pair => pair.split('\n').map(x => eval(x) as number[]));
+	const Pairs = input.split("\n\n").map((pair) => pair.split("\n").map((x) => eval(x) as number[]));
 
-  const checkArray = (
-    left: number | number[] | number[][] | number[][][],
-    right: number | number[] | number[][] | number[][][],
-  ): boolean | undefined => {
-    if (Array.isArray(left) && Array.isArray(right)) {
-      for (let i = 0; i < left.length && i < right.length; i++) {
-        const check = checkArray(left[i], right[i]);
+	const checkArray = (
+		left: number | number[] | number[][] | number[][][],
+		right: number | number[] | number[][] | number[][][],
+	): boolean | undefined => {
+		if (Array.isArray(left) && Array.isArray(right)) {
+			for (let i = 0; i < left.length && i < right.length; i++) {
+				const check = checkArray(left[i], right[i]);
 
-        if (check !== undefined) return check;
-      }
+				if (check !== undefined) return check;
+			}
 
-      if (left.length !== right.length) return left.length < right.length;
-      return;
-    }
+			if (left.length !== right.length) return left.length < right.length;
+			return;
+		}
 
-    if (typeof left === 'number' && typeof right === 'number') {
-      if (left !== right) return left < right;
-      return;
-    }
+		if (typeof left === "number" && typeof right === "number") {
+			if (left !== right) return left < right;
+			return;
+		}
 
-    if (Array.isArray(left) && !Array.isArray(right)) {
-      right = [right];
-    }
+		if (Array.isArray(left) && !Array.isArray(right)) {
+			right = [right];
+		}
 
-    if (!Array.isArray(left) && Array.isArray(right)) {
-      left = [left];
-    }
+		if (!Array.isArray(left) && Array.isArray(right)) {
+			left = [left];
+		}
 
-    return checkArray(left, right);
-  };
+		return checkArray(left, right);
+	};
 
-  const sortedParsed = [...Pairs.flatMap(p => p), [[2]], [[6]]].sort((a, b) => {
-    const c = checkArray(a, b);
-    if (c === undefined) return 0;
-    return c ? -1 : 1;
-  });
+	const sortedParsed = [...Pairs.flatMap((p) => p), [[2]], [[6]]].sort((a, b) => {
+		const c = checkArray(a, b);
+		if (c === undefined) return 0;
+		return c ? -1 : 1;
+	});
 
-  let first = -1;
+	let first = -1;
 
-  let second = -1;
+	let second = -1;
 
-  sortedParsed.forEach((p, index) => {
-    if (JSON.stringify(p) === JSON.stringify([[2]])) {
-      first = index + 1;
-    }
+	sortedParsed.forEach((p, index) => {
+		if (JSON.stringify(p) === JSON.stringify([[2]])) {
+			first = index + 1;
+		}
 
-    if (JSON.stringify(p) === JSON.stringify([[6]])) {
-      second = index + 1;
-    }
-  });
+		if (JSON.stringify(p) === JSON.stringify([[6]])) {
+			second = index + 1;
+		}
+	});
 
-  console.log(`PartTwo`, first * second);
+	console.log(`PartTwo`, first * second);
 };
 PartTwo(input);

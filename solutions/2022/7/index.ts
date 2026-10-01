@@ -1,5 +1,7 @@
 // https://adventofcode.com/2022/day/7
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // --- Day 7: No Space Left On Device ---
 // You can hear birds chirping and raindrops hitting leaves as the expedition proceeds. Occasionally, you can even hear much louder sounds in the distance; how big do the animals get out here, anyway?
@@ -77,89 +79,89 @@ const input = await Deno.readTextFile('./input.txt');
 // Find all of the directories with a total size of at most 100000. What is the sum of the total sizes of those directories?
 
 interface Structure {
-  [x: string]: number | Structure;
+	[x: string]: number | Structure;
 }
 const PartOne = (input: string) => {
-  const cmdArray = input
-    .split(/(?=\r\n\$ cd)/g)
-    .map(x => x.split('\r\n').filter(x => x.trim().length > 0));
+	const cmdArray = input
+		.split(/(?=\r\n\$ cd)/g)
+		.map((x) => x.split("\r\n").filter((x) => x.trim().length > 0));
 
-  const fileBuilder = (inputs: string[]): Structure => {
-    const struct: Structure = {};
+	const fileBuilder = (inputs: string[]): Structure => {
+		const struct: Structure = {};
 
-    inputs.forEach(inp => {
-      const [info, name] = inp.split(' ');
+		inputs.forEach((inp) => {
+			const [info, name] = inp.split(" ");
 
-      if (info === 'dir') {
-        struct[name] = fileBuilder([]);
-      } else {
-        struct[name] = Number(info);
-      }
+			if (info === "dir") {
+				struct[name] = fileBuilder([]);
+			} else {
+				struct[name] = Number(info);
+			}
 
-      return struct;
-    });
+			return struct;
+		});
 
-    return struct;
-  };
-  const set = (obj: Structure, keys: string[], val: Structure) => {
-    if (keys.length === 1) {
-      obj[keys[0]] = val;
-    } else {
-      set(obj[keys[0]] as Structure, keys.slice(1), val);
-    }
+		return struct;
+	};
+	const set = (obj: Structure, keys: string[], val: Structure) => {
+		if (keys.length === 1) {
+			obj[keys[0]] = val;
+		} else {
+			set(obj[keys[0]] as Structure, keys.slice(1), val);
+		}
 
-    return obj;
-  };
+		return obj;
+	};
 
-  const pwd: string[] = [];
-  let mainStruct: Structure = {};
+	const pwd: string[] = [];
+	let mainStruct: Structure = {};
 
-  cmdArray.forEach(cmdSet => {
-    const [code, , ...cmds] = cmdSet;
-    const [, , dir] = code.split(' ');
+	cmdArray.forEach((cmdSet) => {
+		const [code, , ...cmds] = cmdSet;
+		const [, , dir] = code.split(" ");
 
-    if (dir === '..') {
-      return pwd.pop();
-    } else if (dir === '/') {
-      pwd.splice(0, pwd.length);
+		if (dir === "..") {
+			return pwd.pop();
+		} else if (dir === "/") {
+			pwd.splice(0, pwd.length);
 
-      mainStruct = { ...mainStruct, ...fileBuilder(cmds) };
-    } else {
-      pwd.push(dir);
+			mainStruct = { ...mainStruct, ...fileBuilder(cmds) };
+		} else {
+			pwd.push(dir);
 
-      mainStruct = set(mainStruct, pwd, fileBuilder(cmds));
-    }
-  });
+			mainStruct = set(mainStruct, pwd, fileBuilder(cmds));
+		}
+	});
 
-  const getDirSize = (dir: Structure): number => {
-    return Object.keys(dir).reduce((acc, key) => {
-      const val = dir[key];
+	const getDirSize = (dir: Structure): number => {
+		return Object.keys(dir).reduce((acc, key) => {
+			const val = dir[key];
 
-      if (typeof val === 'number') {
-        return acc + val;
-      }
+			if (typeof val === "number") {
+				return acc + val;
+			}
 
-      return acc + getDirSize(val);
-    }, 0);
-  };
+			return acc + getDirSize(val);
+		}, 0);
+	};
 
-  const getDirs = (dir: Structure): Structure[] => {
-    return Object.keys(dir).reduce((acc, key) => {
-      const val = dir[key];
+	const getDirs = (dir: Structure): Structure[] => {
+		return Object.keys(dir).reduce((acc, key) => {
+			const val = dir[key];
 
-      if (typeof val === 'number') {
-        return acc;
-      }
+			if (typeof val === "number") {
+				return acc;
+			}
 
-      return [...acc, val, ...getDirs(val)];
-    }, [] as Structure[]);
-  };
+			return [...acc, val, ...getDirs(val)];
+		}, [] as Structure[]);
+	};
 
-  const sum = getDirs(mainStruct)
-    .filter(dir => getDirSize(dir) <= 100000)
-    .reduce((acc, dir) => acc + getDirSize(dir), 0);
+	const sum = getDirs(mainStruct)
+		.filter((dir) => getDirSize(dir) <= 100000)
+		.reduce((acc, dir) => acc + getDirSize(dir), 0);
 
-  console.log(sum);
+	console.log(sum);
 };
 PartOne(input);
 
@@ -181,88 +183,88 @@ PartOne(input);
 // Find the smallest directory that, if deleted, would free up enough space on the filesystem to run the update. What is the total size of that directory?
 
 const PartTwo = (input: string) => {
-  const cmdArray = input
-    .split(/(?=\r\n\$ cd)/g)
-    .map(x => x.split('\r\n').filter(x => x.trim().length > 0));
+	const cmdArray = input
+		.split(/(?=\r\n\$ cd)/g)
+		.map((x) => x.split("\r\n").filter((x) => x.trim().length > 0));
 
-  const fileBuilder = (inputs: string[]): Structure => {
-    const struct: Structure = {};
+	const fileBuilder = (inputs: string[]): Structure => {
+		const struct: Structure = {};
 
-    inputs.forEach(inp => {
-      const [info, name] = inp.split(' ');
+		inputs.forEach((inp) => {
+			const [info, name] = inp.split(" ");
 
-      if (info === 'dir') {
-        struct[name] = fileBuilder([]);
-      } else {
-        struct[name] = Number(info);
-      }
+			if (info === "dir") {
+				struct[name] = fileBuilder([]);
+			} else {
+				struct[name] = Number(info);
+			}
 
-      return struct;
-    });
+			return struct;
+		});
 
-    return struct;
-  };
-  const set = (obj: Structure, keys: string[], val: Structure) => {
-    if (keys.length === 1) {
-      obj[keys[0]] = val;
-    } else {
-      set(obj[keys[0]] as Structure, keys.slice(1), val);
-    }
+		return struct;
+	};
+	const set = (obj: Structure, keys: string[], val: Structure) => {
+		if (keys.length === 1) {
+			obj[keys[0]] = val;
+		} else {
+			set(obj[keys[0]] as Structure, keys.slice(1), val);
+		}
 
-    return obj;
-  };
+		return obj;
+	};
 
-  const TOTAL_SPACE = 70000000;
-  const REQUIRED_SPACE = 30000000;
+	const TOTAL_SPACE = 70000000;
+	const REQUIRED_SPACE = 30000000;
 
-  const pwd: string[] = [];
-  let mainStruct: Structure = {};
+	const pwd: string[] = [];
+	let mainStruct: Structure = {};
 
-  cmdArray.forEach(cmdSet => {
-    const [code, , ...cmds] = cmdSet;
-    const [, , dir] = code.split(' ');
+	cmdArray.forEach((cmdSet) => {
+		const [code, , ...cmds] = cmdSet;
+		const [, , dir] = code.split(" ");
 
-    if (dir === '..') {
-      return pwd.pop();
-    } else if (dir === '/') {
-      pwd.splice(0, pwd.length);
+		if (dir === "..") {
+			return pwd.pop();
+		} else if (dir === "/") {
+			pwd.splice(0, pwd.length);
 
-      mainStruct = { ...mainStruct, ...fileBuilder(cmds) };
-    } else {
-      pwd.push(dir);
+			mainStruct = { ...mainStruct, ...fileBuilder(cmds) };
+		} else {
+			pwd.push(dir);
 
-      mainStruct = set(mainStruct, pwd, fileBuilder(cmds));
-    }
-  });
+			mainStruct = set(mainStruct, pwd, fileBuilder(cmds));
+		}
+	});
 
-  const getDirSize = (dir: Structure): number => {
-    return Object.keys(dir).reduce((acc, key) => {
-      const val = dir[key];
+	const getDirSize = (dir: Structure): number => {
+		return Object.keys(dir).reduce((acc, key) => {
+			const val = dir[key];
 
-      if (typeof val === 'number') {
-        return acc + val;
-      }
+			if (typeof val === "number") {
+				return acc + val;
+			}
 
-      return acc + getDirSize(val);
-    }, 0);
-  };
+			return acc + getDirSize(val);
+		}, 0);
+	};
 
-  const getDirs = (dir: Structure): Structure[] => {
-    return Object.keys(dir).reduce((acc, key) => {
-      const val = dir[key];
+	const getDirs = (dir: Structure): Structure[] => {
+		return Object.keys(dir).reduce((acc, key) => {
+			const val = dir[key];
 
-      if (typeof val === 'number') {
-        return acc;
-      }
+			if (typeof val === "number") {
+				return acc;
+			}
 
-      return [...acc, val, ...getDirs(val)];
-    }, [] as Structure[]);
-  };
+			return [...acc, val, ...getDirs(val)];
+		}, [] as Structure[]);
+	};
 
-  const directoriesThatMatch = getDirs(mainStruct)
-    .map(getDirSize)
-    .filter(x => x >= REQUIRED_SPACE - (TOTAL_SPACE - getDirSize(mainStruct)));
+	const directoriesThatMatch = getDirs(mainStruct)
+		.map(getDirSize)
+		.filter((x) => x >= REQUIRED_SPACE - (TOTAL_SPACE - getDirSize(mainStruct)));
 
-  console.log(Math.min(...directoriesThatMatch));
+	console.log(Math.min(...directoriesThatMatch));
 };
 PartTwo(input);

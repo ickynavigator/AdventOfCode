@@ -1,5 +1,7 @@
 // https://adventofcode.com/2022/day/5
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // --- Day 5: Supply Stacks ---
 // The expedition can depart as soon as the final supplies have been unloaded from the ships. Supplies are stored in stacks of marked crates, but because the needed supplies are buried under many other crates, the crates need to be rearranged.
@@ -53,46 +55,42 @@ const input = await Deno.readTextFile('./input.txt');
 // After the rearrangement procedure completes, what crate ends up on top of each stack?
 
 const PartOne = (input: string) => {
-  const [cratesArray, stepsArray] = input
-    .split('\r\n\r\n')
-    .map(x => x.split('\r\n'));
+	const [cratesArray, stepsArray] = input.split("\r\n\r\n").map((x) => x.split("\r\n"));
 
-  const crates: string[][] = [];
-  for (const crateRow of cratesArray) {
-    const newRow = [];
-    for (let i = 1; i < crateRow.length; i += 4) {
-      newRow.push(crateRow[i]);
-    }
-    crates.push(newRow);
-  }
+	const crates: string[][] = [];
+	for (const crateRow of cratesArray) {
+		const newRow = [];
+		for (let i = 1; i < crateRow.length; i += 4) {
+			newRow.push(crateRow[i]);
+		}
+		crates.push(newRow);
+	}
 
-  crates.pop();
-  const cratesStack: string[][] = [];
-  for (let row = 0; row <= crates.length; row++) {
-    const newStack = [];
-    for (let level = crates.length - 1; level >= 0; level--) {
-      if (crates[level][row] !== ' ') {
-        newStack.push(crates[level][row]);
-      }
-    }
-    cratesStack.push(newStack);
-  }
+	crates.pop();
+	const cratesStack: string[][] = [];
+	for (let row = 0; row <= crates.length; row++) {
+		const newStack = [];
+		for (let level = crates.length - 1; level >= 0; level--) {
+			if (crates[level][row] !== " ") {
+				newStack.push(crates[level][row]);
+			}
+		}
+		cratesStack.push(newStack);
+	}
 
-  for (const step of stepsArray) {
-    const [quantity, start, end] = (step.match(/\d+/g) as RegExpMatchArray).map(
-      x => Number(x),
-    );
+	for (const step of stepsArray) {
+		const [quantity, start, end] = (step.match(/\d+/g) as RegExpMatchArray).map((x) => Number(x));
 
-    for (let turn = 0; turn < quantity; turn++) {
-      const toMove = cratesStack[start - 1].pop() as string;
+		for (let turn = 0; turn < quantity; turn++) {
+			const toMove = cratesStack[start - 1].pop() as string;
 
-      cratesStack[end - 1].push(toMove);
-    }
-  }
+			cratesStack[end - 1].push(toMove);
+		}
+	}
 
-  const topLevel = cratesStack.map(c => c[c.length - 1]).join('');
+	const topLevel = cratesStack.map((c) => c[c.length - 1]).join("");
 
-  console.log(topLevel);
+	console.log(topLevel);
 };
 PartOne(input);
 
@@ -141,45 +139,39 @@ PartOne(input);
 // Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies. After the rearrangement procedure completes, what crate ends up on top of each stack?
 
 const PartTwo = (input: string) => {
-  const [cratesArray, stepsArray] = input
-    .split('\r\n\r\n')
-    .map(x => x.split('\r\n'));
+	const [cratesArray, stepsArray] = input.split("\r\n\r\n").map((x) => x.split("\r\n"));
 
-  const crates: string[][] = [];
-  for (const crateRow of cratesArray) {
-    const newRow = [];
-    for (let i = 1; i < crateRow.length; i += 4) {
-      newRow.push(crateRow[i]);
-    }
-    crates.push(newRow);
-  }
+	const crates: string[][] = [];
+	for (const crateRow of cratesArray) {
+		const newRow = [];
+		for (let i = 1; i < crateRow.length; i += 4) {
+			newRow.push(crateRow[i]);
+		}
+		crates.push(newRow);
+	}
 
-  crates.pop();
-  const cratesStack: string[][] = [];
-  for (let row = 0; row <= crates.length; row++) {
-    const newStack = [];
-    for (let level = crates.length - 1; level >= 0; level--) {
-      if (crates[level][row] !== ' ') {
-        newStack.push(crates[level][row]);
-      }
-    }
-    cratesStack.push(newStack);
-  }
+	crates.pop();
+	const cratesStack: string[][] = [];
+	for (let row = 0; row <= crates.length; row++) {
+		const newStack = [];
+		for (let level = crates.length - 1; level >= 0; level--) {
+			if (crates[level][row] !== " ") {
+				newStack.push(crates[level][row]);
+			}
+		}
+		cratesStack.push(newStack);
+	}
 
-  for (const step of stepsArray) {
-    const [quantity, start, end] = (step.match(/\d+/g) as RegExpMatchArray).map(
-      x => Number(x),
-    );
+	for (const step of stepsArray) {
+		const [quantity, start, end] = (step.match(/\d+/g) as RegExpMatchArray).map((x) => Number(x));
 
-    const toMove = cratesStack[start - 1].splice(
-      cratesStack[start - 1].length - quantity,
-    );
+		const toMove = cratesStack[start - 1].splice(cratesStack[start - 1].length - quantity);
 
-    cratesStack[end - 1].push(...toMove);
-  }
+		cratesStack[end - 1].push(...toMove);
+	}
 
-  const topLevel = cratesStack.map(c => c[c.length - 1]).join('');
+	const topLevel = cratesStack.map((c) => c[c.length - 1]).join("");
 
-  console.log(topLevel);
+	console.log(topLevel);
 };
 PartTwo(input);

@@ -1,5 +1,7 @@
 // https://adventofcode.com/2022/day/11
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // --- Day 11: Monkey in the Middle ---
 // As you finally start making your way upriver, you realize your pack is much lighter than you remember. Just then, one of the items from your pack goes flying overhead. Monkeys are playing Keep Away with your missing things!
@@ -214,76 +216,76 @@ const input = await Deno.readTextFile('./input.txt');
 // Figure out which monkeys to chase by counting how many items they inspect over 20 rounds. What is the level of monkey business after 20 rounds of stuff-slinging simian shenanigans?
 
 interface Monkey {
-  inspectCnt: number;
-  starting: number[];
-  operation: string;
-  test: {
-    divisible: number;
-    case: {
-      positive: number;
-      negative: number;
-    };
-  };
+	inspectCnt: number;
+	starting: number[];
+	operation: string;
+	test: {
+		divisible: number;
+		case: {
+			positive: number;
+			negative: number;
+		};
+	};
 }
 const PartOne = (input: string) => {
-  const MonkeysArray = input.split(/(?=Monkey \d*:)/).map(x => {
-    const section = x.split('\r\n');
+	const MonkeysArray = input.split(/(?=Monkey \d*:)/).map((x) => {
+		const section = x.split("\r\n");
 
-    const monkey: Monkey = {
-      inspectCnt: 0,
-      starting: section[1]
-        .split(': ')[1]
-        .split(', ')
-        .map(x => Number(x)),
-      operation: section[2].split('= ')[1],
-      test: {
-        divisible: Number(section[3].split('by ')[1]),
-        case: {
-          positive: Number(section[4].split('monkey ')[1]),
-          negative: Number(section[5].split('monkey ')[1]),
-        },
-      },
-    };
+		const monkey: Monkey = {
+			inspectCnt: 0,
+			starting: section[1]
+				.split(": ")[1]
+				.split(", ")
+				.map((x) => Number(x)),
+			operation: section[2].split("= ")[1],
+			test: {
+				divisible: Number(section[3].split("by ")[1]),
+				case: {
+					positive: Number(section[4].split("monkey ")[1]),
+					negative: Number(section[5].split("monkey ")[1]),
+				},
+			},
+		};
 
-    return monkey;
-  });
+		return monkey;
+	});
 
-  const parseOperation = (operation: string, old: number): number => {
-    const job = operation.replace('old', String(old));
+	const parseOperation = (operation: string, old: number): number => {
+		const job = operation.replace("old", String(old));
 
-    return eval(job) as number;
-  };
+		return eval(job) as number;
+	};
 
-  const inspects = Array.from({ length: MonkeysArray.length }, () => 0);
+	const inspects = Array.from({ length: MonkeysArray.length }, () => 0);
 
-  for (let i = 1; i <= 20; i++) {
-    MonkeysArray.forEach((monkey, ind) => {
-      monkey.starting.forEach(item => {
-        inspects[ind]++;
+	for (let i = 1; i <= 20; i++) {
+		MonkeysArray.forEach((monkey, ind) => {
+			monkey.starting.forEach((item) => {
+				inspects[ind]++;
 
-        let worrylvl = item;
+				let worrylvl = item;
 
-        worrylvl = parseOperation(monkey.operation, worrylvl);
+				worrylvl = parseOperation(monkey.operation, worrylvl);
 
-        worrylvl = Math.floor(worrylvl / 3);
+				worrylvl = Math.floor(worrylvl / 3);
 
-        if (worrylvl % monkey.test.divisible === 0) {
-          MonkeysArray[monkey.test.case.positive].starting.push(worrylvl);
-        } else {
-          MonkeysArray[monkey.test.case.negative].starting.push(worrylvl);
-        }
-      });
+				if (worrylvl % monkey.test.divisible === 0) {
+					MonkeysArray[monkey.test.case.positive].starting.push(worrylvl);
+				} else {
+					MonkeysArray[monkey.test.case.negative].starting.push(worrylvl);
+				}
+			});
 
-      monkey.starting = [];
-    });
-  }
+			monkey.starting = [];
+		});
+	}
 
-  inspects.forEach((inspect, ind) => {
-    console.log(`Monkey ${ind} inspected items ${inspect} times.`);
-  });
+	inspects.forEach((inspect, ind) => {
+		console.log(`Monkey ${ind} inspected items ${inspect} times.`);
+	});
 
-  const sortedInspects = inspects.sort((a, b) => b - a);
-  console.log(sortedInspects[0] * sortedInspects[1]);
+	const sortedInspects = inspects.sort((a, b) => b - a);
+	console.log(sortedInspects[0] * sortedInspects[1]);
 };
 PartOne(input);
 
@@ -372,68 +374,65 @@ PartOne(input);
 // Worry levels are no longer divided by three after each item is inspected; you'll need to find another way to keep your worry levels manageable. Starting again from the initial state in your puzzle input, what is the level of monkey business after 10000 rounds?
 
 const PartTwo = (input: string) => {
-  const MonkeysArray = input.split(/(?=Monkey \d*:)/).map(x => {
-    const section = x.split('\r\n');
+	const MonkeysArray = input.split(/(?=Monkey \d*:)/).map((x) => {
+		const section = x.split("\r\n");
 
-    const monkey: Monkey = {
-      inspectCnt: 0,
-      starting: section[1]
-        .split(': ')[1]
-        .split(', ')
-        .map(x => Number(x)),
-      operation: section[2].split('= ')[1],
-      test: {
-        divisible: Number(section[3].split('by ')[1]),
-        case: {
-          positive: Number(section[4].split('monkey ')[1]),
-          negative: Number(section[5].split('monkey ')[1]),
-        },
-      },
-    };
+		const monkey: Monkey = {
+			inspectCnt: 0,
+			starting: section[1]
+				.split(": ")[1]
+				.split(", ")
+				.map((x) => Number(x)),
+			operation: section[2].split("= ")[1],
+			test: {
+				divisible: Number(section[3].split("by ")[1]),
+				case: {
+					positive: Number(section[4].split("monkey ")[1]),
+					negative: Number(section[5].split("monkey ")[1]),
+				},
+			},
+		};
 
-    return monkey;
-  });
+		return monkey;
+	});
 
-  const parseOperation = (operation: string, old: number): number => {
-    const job = operation.replace('old', String(old));
+	const parseOperation = (operation: string, old: number): number => {
+		const job = operation.replace("old", String(old));
 
-    return eval(job) as number;
-  };
+		return eval(job) as number;
+	};
 
-  const inspects = Array.from({ length: MonkeysArray.length }, () => 0);
+	const inspects = Array.from({ length: MonkeysArray.length }, () => 0);
 
-  const mod = MonkeysArray.reduce(
-    (prev, curr) => prev * curr.test.divisible,
-    1,
-  );
+	const mod = MonkeysArray.reduce((prev, curr) => prev * curr.test.divisible, 1);
 
-  for (let i = 1; i <= 10000; i++) {
-    MonkeysArray.forEach((monkey, ind) => {
-      inspects[ind] += monkey.starting.length;
-      monkey.starting.forEach(item => {
-        // inspects[ind]++;
-        let worrylvl = item;
+	for (let i = 1; i <= 10000; i++) {
+		MonkeysArray.forEach((monkey, ind) => {
+			inspects[ind] += monkey.starting.length;
+			monkey.starting.forEach((item) => {
+				// inspects[ind]++;
+				let worrylvl = item;
 
-        worrylvl = parseOperation(monkey.operation, worrylvl);
+				worrylvl = parseOperation(monkey.operation, worrylvl);
 
-        worrylvl = worrylvl % mod;
+				worrylvl = worrylvl % mod;
 
-        if (worrylvl % monkey.test.divisible === 0) {
-          MonkeysArray[monkey.test.case.positive].starting.push(worrylvl);
-        } else {
-          MonkeysArray[monkey.test.case.negative].starting.push(worrylvl);
-        }
-      });
+				if (worrylvl % monkey.test.divisible === 0) {
+					MonkeysArray[monkey.test.case.positive].starting.push(worrylvl);
+				} else {
+					MonkeysArray[monkey.test.case.negative].starting.push(worrylvl);
+				}
+			});
 
-      monkey.starting = [];
-    });
-  }
+			monkey.starting = [];
+		});
+	}
 
-  inspects.forEach((inspect, ind) => {
-    console.log(`Monkey ${ind} inspected items ${inspect} times.`);
-  });
+	inspects.forEach((inspect, ind) => {
+		console.log(`Monkey ${ind} inspected items ${inspect} times.`);
+	});
 
-  const sortedInspects = inspects.sort((a, b) => b - a);
-  console.log(sortedInspects[0] * sortedInspects[1]);
+	const sortedInspects = inspects.sort((a, b) => b - a);
+	console.log(sortedInspects[0] * sortedInspects[1]);
 };
 PartTwo(input);

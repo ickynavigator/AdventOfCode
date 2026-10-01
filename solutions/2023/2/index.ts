@@ -1,4 +1,6 @@
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 /**
 --- Day 2: Cube Conundrum ---
@@ -30,28 +32,28 @@ In the example above, games 1, 2, and 5 would have been possible if the bag had 
 Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
  */
 const PartOne = (input: string) => {
-  const gamesArr = input.split('\n');
+	const gamesArr = input.split("\n");
 
-  let score = 0;
-  const ALLOWED: Record<string, number> = { red: 12, green: 13, blue: 14 };
-  const keys = Object.keys(ALLOWED);
+	let score = 0;
+	const ALLOWED: Record<string, number> = { red: 12, green: 13, blue: 14 };
+	const keys = Object.keys(ALLOWED);
 
-  gamesArr.forEach(curr => {
-    let valid = true;
+	gamesArr.forEach((curr) => {
+		let valid = true;
 
-    const info = curr.split(':');
-    const id = info[0].match(/\d+/)?.[0];
-    info[1].split(';').forEach(set => {
-      keys.map(k => {
-        const cnt = Number(set.match(new RegExp(`\\d+.(?=${k})`, 'g')));
-        if (!(cnt <= ALLOWED[k])) valid = false;
-      });
-    });
+		const info = curr.split(":");
+		const id = info[0].match(/\d+/)?.[0];
+		info[1].split(";").forEach((set) => {
+			keys.map((k) => {
+				const cnt = Number(set.match(new RegExp(`\\d+.(?=${k})`, "g")));
+				if (!(cnt <= ALLOWED[k])) valid = false;
+			});
+		});
 
-    if (valid) score += Number(id);
-  });
+		if (valid) score += Number(id);
+	});
 
-  console.log(score);
+	console.log(score);
 };
 PartOne(input);
 
@@ -82,24 +84,24 @@ For each game, find the minimum set of cubes that must have been present. What i
 
  */
 const PartTwo = (input: string) => {
-  const gamesArr = input.split('\n');
-  let score = 0;
+	const gamesArr = input.split("\n");
+	let score = 0;
 
-  gamesArr.forEach(curr => {
-    const data: Record<string, number> = { red: 0, green: 0, blue: 0 };
-    const keys = Object.keys(data);
+	gamesArr.forEach((curr) => {
+		const data: Record<string, number> = { red: 0, green: 0, blue: 0 };
+		const keys = Object.keys(data);
 
-    const info = curr.split(':');
-    info[1].split(';').forEach(set => {
-      keys.forEach(k => {
-        const cnt = Number(set.match(new RegExp(`\\d+.(?=${k})`, 'g')));
-        data[k] = data[k] > cnt ? data[k] : cnt;
-      });
-    });
+		const info = curr.split(":");
+		info[1].split(";").forEach((set) => {
+			keys.forEach((k) => {
+				const cnt = Number(set.match(new RegExp(`\\d+.(?=${k})`, "g")));
+				data[k] = data[k] > cnt ? data[k] : cnt;
+			});
+		});
 
-    score += Object.values(data).reduce((prev, curr) => prev * curr, 1);
-  });
+		score += Object.values(data).reduce((prev, curr) => prev * curr, 1);
+	});
 
-  console.log(score);
+	console.log(score);
 };
 PartTwo(input);

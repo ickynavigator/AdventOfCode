@@ -1,4 +1,6 @@
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // https://adventofcode.com/2021/day/1
 // --- Day 1: Sonar Sweep ---
@@ -45,20 +47,20 @@ const input = await Deno.readTextFile('./input.txt');
 // How many measurements are larger than the previous measurement?
 
 const PartOne = (input: string) => {
-  const depthArray = input.split('\r\n');
+	const depthArray = input.split("\r\n");
 
-  let increments = 0;
+	let increments = 0;
 
-  for (let i = 0; i <= depthArray.length; i++) {
-    const curr = Number(depthArray[i]);
-    const next = Number(depthArray[i + 1]);
+	for (let i = 0; i <= depthArray.length; i++) {
+		const curr = Number(depthArray[i]);
+		const next = Number(depthArray[i + 1]);
 
-    if (curr <= next) {
-      increments++;
-    }
-  }
+		if (curr <= next) {
+			increments++;
+		}
+	}
 
-  console.log(increments);
+	console.log(increments);
 };
 PartOne(input);
 
@@ -96,29 +98,25 @@ PartOne(input);
 // Consider sums of a three-measurement sliding window. How many sums are larger than the previous sum?
 
 const PartTwo = (input: string) => {
-  const depthArray = input.split('\r\n');
+	const depthArray = input.split("\r\n");
 
-  let increments = 0;
+	let increments = 0;
 
-  for (let i = 0; i <= depthArray.length; i++) {
-    if (depthArray.length - 3 === i) break;
+	for (let i = 0; i <= depthArray.length; i++) {
+		if (depthArray.length - 3 === i) break;
 
-    const nextThree = (k: number) => {
-      return (
-        Number(depthArray[k]) +
-        Number(depthArray[k + 1]) +
-        Number(depthArray[k + 2])
-      );
-    };
+		const nextThree = (k: number) => {
+			return Number(depthArray[k]) + Number(depthArray[k + 1]) + Number(depthArray[k + 2]);
+		};
 
-    const curr = nextThree(i);
-    const next = nextThree(i + 1);
+		const curr = nextThree(i);
+		const next = nextThree(i + 1);
 
-    if (curr < next) {
-      increments++;
-    }
-  }
+		if (curr < next) {
+			increments++;
+		}
+	}
 
-  console.log(increments);
+	console.log(increments);
 };
 PartTwo(input);

@@ -1,5 +1,7 @@
 // https://adventofcode.com/2022/day/4
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // --- Day 4: Camp Cleanup ---
 // Space needs to be cleared before the last supplies can be unloaded from the ships, and so several Elves have been assigned the job of cleaning up sections of the camp. Every section has a unique ID number, and each Elf is assigned a range of section IDs.
@@ -43,32 +45,32 @@ const input = await Deno.readTextFile('./input.txt');
 // In how many assignment pairs does one range fully contain the other?
 
 const PartOne = (input: string) => {
-  const PairsArray = input.split('\r\n');
+	const PairsArray = input.split("\r\n");
 
-  const spreadNum = (numString: string) => {
-    const nums = numString.split('-');
+	const spreadNum = (numString: string) => {
+		const nums = numString.split("-");
 
-    const start = Number(nums[0]);
-    const stop = Number(nums[1]);
+		const start = Number(nums[0]);
+		const stop = Number(nums[1]);
 
-    return Array.from({ length: stop - start + 1 }, (_, i) => i + start);
-  };
-  const matcher = (nums: number[][]) => {
-    const match = nums[0].filter(value => nums[1].includes(value));
-    const lengths = [nums[0].length, nums[1].length];
+		return Array.from({ length: stop - start + 1 }, (_, i) => i + start);
+	};
+	const matcher = (nums: number[][]) => {
+		const match = nums[0].filter((value) => nums[1].includes(value));
+		const lengths = [nums[0].length, nums[1].length];
 
-    return match.length === Math.min(...lengths) ? true : false;
-  };
+		return match.length === Math.min(...lengths) ? true : false;
+	};
 
-  let badPairs = 0;
+	let badPairs = 0;
 
-  PairsArray.forEach(pair => {
-    const [pr1, pr2] = pair.split(',');
+	PairsArray.forEach((pair) => {
+		const [pr1, pr2] = pair.split(",");
 
-    badPairs += matcher([spreadNum(pr1), spreadNum(pr2)]) ? 1 : 0;
-  });
+		badPairs += matcher([spreadNum(pr1), spreadNum(pr2)]) ? 1 : 0;
+	});
 
-  console.log(badPairs);
+	console.log(badPairs);
 };
 PartOne(input);
 
@@ -86,30 +88,30 @@ PartOne(input);
 // In how many assignment pairs do the ranges overlap?
 
 const PartTwo = (input: string) => {
-  const PairsArray = input.split('\r\n');
+	const PairsArray = input.split("\r\n");
 
-  const spreadNum = (numString: string) => {
-    const nums = numString.split('-');
+	const spreadNum = (numString: string) => {
+		const nums = numString.split("-");
 
-    const start = Number(nums[0]);
-    const stop = Number(nums[1]);
+		const start = Number(nums[0]);
+		const stop = Number(nums[1]);
 
-    return Array.from({ length: stop - start + 1 }, (_, i) => i + start);
-  };
-  const matcher = (nums: number[][]) => {
-    const match = nums[0].filter(value => nums[1].includes(value));
+		return Array.from({ length: stop - start + 1 }, (_, i) => i + start);
+	};
+	const matcher = (nums: number[][]) => {
+		const match = nums[0].filter((value) => nums[1].includes(value));
 
-    return match.length > 0 ? true : false;
-  };
+		return match.length > 0 ? true : false;
+	};
 
-  let badPairs = 0;
+	let badPairs = 0;
 
-  PairsArray.forEach(pair => {
-    const [pr1, pr2] = pair.split(',');
+	PairsArray.forEach((pair) => {
+		const [pr1, pr2] = pair.split(",");
 
-    badPairs += matcher([spreadNum(pr1), spreadNum(pr2)]) ? 1 : 0;
-  });
+		badPairs += matcher([spreadNum(pr1), spreadNum(pr2)]) ? 1 : 0;
+	});
 
-  console.log(badPairs);
+	console.log(badPairs);
 };
 PartTwo(input);

@@ -1,5 +1,7 @@
 // https://adventofcode.com/2022/day/3
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // --- Day 3: Rucksack Reorganization ---
 // One Elf has the important job of loading all of the rucksacks with supplies for the jungle journey. Unfortunately, that Elf didn't quite follow the packing instructions, and so a few items now need to be rearranged.
@@ -33,29 +35,29 @@ const input = await Deno.readTextFile('./input.txt');
 // Find the item type that appears in both compartments of each rucksack. What is the sum of the priorities of those item types?
 
 const PartOne = (input: string) => {
-  const matcher = (s1: string, s2: string): string => {
-    for (const i of s1) if (s2.includes(i)) return i;
-    return '';
-  };
+	const matcher = (s1: string, s2: string): string => {
+		for (const i of s1) if (s2.includes(i)) return i;
+		return "";
+	};
 
-  const RuckSackArray = input.split('\r\n').map(bag => {
-    const middle = bag.length / 2;
+	const RuckSackArray = input.split("\r\n").map((bag) => {
+		const middle = bag.length / 2;
 
-    return [bag.substring(0, middle), bag.substring(middle)];
-  });
+		return [bag.substring(0, middle), bag.substring(middle)];
+	});
 
-  let priorityCnt = 0;
+	let priorityCnt = 0;
 
-  RuckSackArray.forEach(bag => {
-    const match = matcher(bag[0], bag[1]);
+	RuckSackArray.forEach((bag) => {
+		const match = matcher(bag[0], bag[1]);
 
-    const offset = match.toUpperCase() === match ? 38 : 96;
-    const count = match.charCodeAt(0) - offset;
+		const offset = match.toUpperCase() === match ? 38 : 96;
+		const count = match.charCodeAt(0) - offset;
 
-    priorityCnt += count;
-  });
+		priorityCnt += count;
+	});
 
-  console.log(priorityCnt);
+	console.log(priorityCnt);
 };
 PartOne(input);
 
@@ -85,27 +87,27 @@ PartOne(input);
 // Find the item type that corresponds to the badges of each three-Elf group. What is the sum of the priorities of those item types?
 
 const PartTwo = (input: string) => {
-  const matcher = (strings: string[]): string => {
-    const matches = strings[0]
-      .split('')
-      .filter(c => strings[1].includes(c) && strings[2].includes(c));
-    return matches[0];
-  };
+	const matcher = (strings: string[]): string => {
+		const matches = strings[0]
+			.split("")
+			.filter((c) => strings[1].includes(c) && strings[2].includes(c));
+		return matches[0];
+	};
 
-  const RuckSackArray = input.split('\r\n');
+	const RuckSackArray = input.split("\r\n");
 
-  let priorityCnt = 0;
+	let priorityCnt = 0;
 
-  for (let i = 0; i < RuckSackArray.length; i += 3) {
-    const bags = [RuckSackArray[i], RuckSackArray[i + 1], RuckSackArray[i + 2]];
-    const match = matcher(bags);
+	for (let i = 0; i < RuckSackArray.length; i += 3) {
+		const bags = [RuckSackArray[i], RuckSackArray[i + 1], RuckSackArray[i + 2]];
+		const match = matcher(bags);
 
-    const offset = match.toUpperCase() === match ? 38 : 96;
-    const count = match.charCodeAt(0) - offset;
+		const offset = match.toUpperCase() === match ? 38 : 96;
+		const count = match.charCodeAt(0) - offset;
 
-    priorityCnt += count;
-  }
+		priorityCnt += count;
+	}
 
-  console.log(priorityCnt);
+	console.log(priorityCnt);
 };
 PartTwo(input);

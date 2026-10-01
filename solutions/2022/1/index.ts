@@ -1,4 +1,6 @@
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // https://adventofcode.com/2022/day/1
 // --- Day 1: Calorie Counting ---
@@ -40,16 +42,16 @@ const input = await Deno.readTextFile('./input.txt');
 // Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
 
 const PartOne = (input: string) => {
-  const ElvesArray = input.split('\r\n\r\n');
+	const ElvesArray = input.split("\r\n\r\n");
 
-  const ElvesCalories = ElvesArray.map(Elf => {
-    const ElfCalories = Elf.split('\r\n');
-    return ElfCalories.reduce((acc, curr) => acc + parseInt(curr), 0);
-  });
+	const ElvesCalories = ElvesArray.map((Elf) => {
+		const ElfCalories = Elf.split("\r\n");
+		return ElfCalories.reduce((acc, curr) => acc + parseInt(curr), 0);
+	});
 
-  const maxCalories = Math.max(...ElvesCalories);
+	const maxCalories = Math.max(...ElvesCalories);
 
-  console.log('A:', maxCalories);
+	console.log("A:", maxCalories);
 };
 
 PartOne(input);
@@ -64,22 +66,22 @@ PartOne(input);
 // Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
 
 const PartTwo = (input: string) => {
-  const ElvesArray = input.split('\r\n\r\n');
+	const ElvesArray = input.split("\r\n\r\n");
 
-  const ElvesCalories = ElvesArray.map(Elf => {
-    const ElfCalories = Elf.split('\r\n');
-    return ElfCalories.reduce((acc, curr) => acc + parseInt(curr), 0);
-  });
+	const ElvesCalories = ElvesArray.map((Elf) => {
+		const ElfCalories = Elf.split("\r\n");
+		return ElfCalories.reduce((acc, curr) => acc + parseInt(curr), 0);
+	});
 
-  const sortedElvesCalories = ElvesCalories.sort((a, b) => b - a);
+	const sortedElvesCalories = ElvesCalories.sort((a, b) => b - a);
 
-  const TOPCNT = 3;
-  let topElves = 0;
-  for (let i = 0; i < TOPCNT; i++) {
-    topElves += sortedElvesCalories[i];
-  }
+	const TOPCNT = 3;
+	let topElves = 0;
+	for (let i = 0; i < TOPCNT; i++) {
+		topElves += sortedElvesCalories[i];
+	}
 
-  console.log('B:', topElves);
+	console.log("B:", topElves);
 };
 
 PartTwo(input);

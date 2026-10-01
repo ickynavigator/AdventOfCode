@@ -1,6 +1,8 @@
 // https://adventofcode.com/2021/day/2
 
-const input = await Deno.readTextFile('./input.txt');
+import { readFile } from "node:fs/promises";
+
+const input = await readFile("./input.txt", "utf8");
 
 // --- Day 2: Dive! ---
 // Now, you need to figure out how to pilot this thing.
@@ -32,31 +34,31 @@ const input = await Deno.readTextFile('./input.txt');
 
 // Calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 
-type Direction = 'forward' | 'down' | 'up';
+type Direction = "forward" | "down" | "up";
 
 const PartOne = (input: string) => {
-  const instructionsArray = input.split('\r\n');
+	const instructionsArray = input.split("\r\n");
 
-  let horizontal = 0;
-  let depth = 0;
+	let horizontal = 0;
+	let depth = 0;
 
-  instructionsArray.forEach(instruction => {
-    const [direction, distance] = instruction.split(' ') as [Direction, string];
+	instructionsArray.forEach((instruction) => {
+		const [direction, distance] = instruction.split(" ") as [Direction, string];
 
-    switch (direction) {
-      case 'forward':
-        horizontal += Number(distance);
-        break;
-      case 'down':
-        depth += Number(distance);
-        break;
-      case 'up':
-        depth -= Number(distance);
-        break;
-    }
-  });
+		switch (direction) {
+			case "forward":
+				horizontal += Number(distance);
+				break;
+			case "down":
+				depth += Number(distance);
+				break;
+			case "up":
+				depth -= Number(distance);
+				break;
+		}
+	});
 
-  console.log(horizontal * depth);
+	console.log(horizontal * depth);
 };
 PartOne(input);
 
@@ -85,29 +87,29 @@ PartOne(input);
 // Using this new interpretation of the commands, calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 
 const PartTwo = (input: string) => {
-  const instructionsArray = input.split('\r\n');
+	const instructionsArray = input.split("\r\n");
 
-  let horizontal = 0;
-  let depth = 0;
-  let aim = 0;
+	let horizontal = 0;
+	let depth = 0;
+	let aim = 0;
 
-  instructionsArray.forEach(instruction => {
-    const [direction, distance] = instruction.split(' ') as [Direction, string];
+	instructionsArray.forEach((instruction) => {
+		const [direction, distance] = instruction.split(" ") as [Direction, string];
 
-    switch (direction) {
-      case 'forward':
-        horizontal += Number(distance);
-        depth += aim * Number(distance);
-        break;
-      case 'down':
-        aim += Number(distance);
-        break;
-      case 'up':
-        aim -= Number(distance);
-        break;
-    }
-  });
+		switch (direction) {
+			case "forward":
+				horizontal += Number(distance);
+				depth += aim * Number(distance);
+				break;
+			case "down":
+				aim += Number(distance);
+				break;
+			case "up":
+				aim -= Number(distance);
+				break;
+		}
+	});
 
-  console.log(horizontal * depth);
+	console.log(horizontal * depth);
 };
 PartTwo(input);
