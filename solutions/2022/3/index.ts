@@ -43,7 +43,7 @@ const PartOne = (input: string) => {
 		return "";
 	};
 
-	const RuckSackArray = input.split("\r\n").map((bag) => {
+	const RuckSackArray = input.split(/\r?\n/).map((bag) => {
 		const middle = bag.length / 2;
 
 		return [bag.substring(0, middle), bag.substring(middle)];
@@ -97,7 +97,7 @@ const PartTwo = (input: string) => {
 		return matches[0];
 	};
 
-	const RuckSackArray = input.split("\r\n");
+	const RuckSackArray = input.split(/\r?\n/);
 
 	let priorityCnt = 0;
 

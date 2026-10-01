@@ -50,7 +50,7 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 // How many measurements are larger than the previous measurement?
 
 const PartOne = (input: string) => {
-	const depthArray = input.split("\r\n");
+	const depthArray = input.split("\r?\n");
 
 	let increments = 0;
 
@@ -101,7 +101,7 @@ PartOne(input);
 // Consider sums of a three-measurement sliding window. How many sums are larger than the previous sum?
 
 const PartTwo = (input: string) => {
-	const depthArray = input.split("\r\n");
+	const depthArray = input.split("\r?\n");
 
 	let increments = 0;
 

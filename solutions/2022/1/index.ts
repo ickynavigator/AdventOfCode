@@ -45,10 +45,10 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 // Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
 
 const PartOne = (input: string) => {
-	const ElvesArray = input.split("\r\n\r\n");
+	const ElvesArray = input.split("\r?\n\r?\n");
 
 	const ElvesCalories = ElvesArray.map((Elf) => {
-		const ElfCalories = Elf.split("\r\n");
+		const ElfCalories = Elf.split("\r?\n");
 		return ElfCalories.reduce((acc, curr) => acc + parseInt(curr), 0);
 	});
 
@@ -69,10 +69,10 @@ PartOne(input);
 // Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
 
 const PartTwo = (input: string) => {
-	const ElvesArray = input.split("\r\n\r\n");
+	const ElvesArray = input.split("\r?\n\r?\n");
 
 	const ElvesCalories = ElvesArray.map((Elf) => {
-		const ElfCalories = Elf.split("\r\n");
+		const ElfCalories = Elf.split("\r?\n");
 		return ElfCalories.reduce((acc, curr) => acc + parseInt(curr), 0);
 	});
 

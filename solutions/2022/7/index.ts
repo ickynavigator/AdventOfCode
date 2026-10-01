@@ -86,8 +86,8 @@ interface Structure {
 }
 const PartOne = (input: string) => {
 	const cmdArray = input
-		.split(/(?=\r\n\$ cd)/g)
-		.map((x) => x.split("\r\n").filter((x) => x.trim().length > 0));
+		.split(/(?=\r?\n\$ cd)/g)
+		.map((x) => x.split("\r?\n").filter((x) => x.trim().length > 0));
 
 	const fileBuilder = (inputs: string[]): Structure => {
 		const struct: Structure = {};
@@ -187,8 +187,8 @@ PartOne(input);
 
 const PartTwo = (input: string) => {
 	const cmdArray = input
-		.split(/(?=\r\n\$ cd)/g)
-		.map((x) => x.split("\r\n").filter((x) => x.trim().length > 0));
+		.split(/(?=\r?\n\$ cd)/g)
+		.map((x) => x.split("\r?\n").filter((x) => x.trim().length > 0));
 
 	const fileBuilder = (inputs: string[]): Structure => {
 		const struct: Structure = {};

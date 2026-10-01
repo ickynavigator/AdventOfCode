@@ -232,7 +232,7 @@ interface Monkey {
 }
 const PartOne = (input: string) => {
 	const MonkeysArray = input.split(/(?=Monkey \d*:)/).map((x) => {
-		const section = x.split("\r\n");
+		const section = x.split(/\r?\n/);
 
 		const monkey: Monkey = {
 			inspectCnt: 0,
@@ -378,7 +378,7 @@ PartOne(input);
 
 const PartTwo = (input: string) => {
 	const MonkeysArray = input.split(/(?=Monkey \d*:)/).map((x) => {
-		const section = x.split("\r\n");
+		const section = x.split(/\r?\n/);
 
 		const monkey: Monkey = {
 			inspectCnt: 0,

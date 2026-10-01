@@ -34,7 +34,7 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // Consider your map; how many trees are visible from outside the grid?
 const PartOne = (input: string) => {
-	const treeGrid = input.split("\r\n").map((x) => x.split("").map((x) => parseInt(x)));
+	const treeGrid = input.split("\r?\n").map((x) => x.split("").map((x) => parseInt(x)));
 
 	let visible = 0;
 
@@ -140,7 +140,7 @@ PartOne(input);
 
 // Consider each tree on your map. What is the highest scenic score possible for any tree?
 const PartTwo = (input: string) => {
-	const treeGrid = input.split("\r\n").map((x) => x.split("").map((x) => parseInt(x)));
+	const treeGrid = input.split("\r?\n").map((x) => x.split("").map((x) => parseInt(x)));
 
 	const checkGrid = (tree: number, x: number, y: number): number => {
 		let up = 0;

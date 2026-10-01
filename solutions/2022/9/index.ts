@@ -250,7 +250,7 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 type Move = { direction: string; distance: number };
 type Piece = [number, number];
 const PartOne = (input: string) => {
-	const movementArray = input.split("\r\n").map((line) => {
+	const movementArray = input.split(/\r?\n/).map((line) => {
 		const [direction, distance] = line.split(" ");
 		return { direction, distance: Number(distance) };
 	});
@@ -757,7 +757,7 @@ PartOne(input);
 
 // type Piece2 = { x: number; y: number };
 const PartTwo = (input: string) => {
-	const movementArray = input.split("\r\n").map((line) => {
+	const movementArray = input.split(/\r?\n/).map((line) => {
 		const [direction, distance] = line.split(" ");
 		return { direction, distance: Number(distance) };
 	});

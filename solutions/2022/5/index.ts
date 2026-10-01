@@ -58,7 +58,7 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 // After the rearrangement procedure completes, what crate ends up on top of each stack?
 
 const PartOne = (input: string) => {
-	const [cratesArray, stepsArray] = input.split("\r\n\r\n").map((x) => x.split("\r\n"));
+	const [cratesArray, stepsArray] = input.split(/\r?\n\r?\n/).map((x) => x.split(/\r?\n/));
 
 	const crates: string[][] = [];
 	for (const crateRow of cratesArray) {
@@ -142,7 +142,7 @@ PartOne(input);
 // Before the rearrangement process finishes, update your simulation so that the Elves know where they should stand to be ready to unload the final supplies. After the rearrangement procedure completes, what crate ends up on top of each stack?
 
 const PartTwo = (input: string) => {
-	const [cratesArray, stepsArray] = input.split("\r\n\r\n").map((x) => x.split("\r\n"));
+	const [cratesArray, stepsArray] = input.split(/\r?\n\r?\n/).map((x) => x.split(/\r?\n/));
 
 	const crates: string[][] = [];
 	for (const crateRow of cratesArray) {

@@ -48,7 +48,7 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 // In how many assignment pairs does one range fully contain the other?
 
 const PartOne = (input: string) => {
-	const PairsArray = input.split("\r\n");
+	const PairsArray = input.split("\r?\n");
 
 	const spreadNum = (numString: string) => {
 		const nums = numString.split("-");
@@ -91,7 +91,7 @@ PartOne(input);
 // In how many assignment pairs do the ranges overlap?
 
 const PartTwo = (input: string) => {
-	const PairsArray = input.split("\r\n");
+	const PairsArray = input.split("\r?\n");
 
 	const spreadNum = (numString: string) => {
 		const nums = numString.split("-");

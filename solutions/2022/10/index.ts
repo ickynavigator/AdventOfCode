@@ -195,13 +195,13 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // Find the signal strength during the 20th, 60th, 100th, 140th, 180th, and 220th cycles. What is the sum of these six signal strengths?
 
-enum Instruction {
-	addx = "addx",
-	noop = "noop",
-}
-type Command = [Instruction.noop] | [Instruction.addx, number];
+const Instruction = {
+	addx: "addx",
+	noop: "noop",
+} as const;
+type Command = [typeof Instruction.noop] | [typeof Instruction.addx, number];
 const PartOne = (input: string) => {
-	const instructionsArray = input.split("\r\n");
+	const instructionsArray = input.split(/\r?\n/);
 
 	let register = 1;
 	let cyclecheck = 20;
@@ -358,13 +358,13 @@ PartOne(input);
 // #######.......#######.......#######.....
 // Render the image given by your program. What eight capital letters appear on your CRT?
 
-enum PixelType {
-	lit = "#",
+const PixelType = {
+	lit: "#",
 	//   used whitespace instead of . to make it easier to read
-	dark = " ",
-}
+	dark: " ",
+} as const;
 const PartTwo = (input: string) => {
-	const instructionsArray = input.split("\r\n");
+	const instructionsArray = input.split(/\r?\n/);
 
 	let register = 1;
 

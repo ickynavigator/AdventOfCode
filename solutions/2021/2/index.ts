@@ -40,7 +40,7 @@ const input = await fs.readFile(inputPath, { encoding: "utf8" });
 type Direction = "forward" | "down" | "up";
 
 const PartOne = (input: string) => {
-	const instructionsArray = input.split("\r\n");
+	const instructionsArray = input.split("\r?\n");
 
 	let horizontal = 0;
 	let depth = 0;
@@ -90,7 +90,7 @@ PartOne(input);
 // Using this new interpretation of the commands, calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 
 const PartTwo = (input: string) => {
-	const instructionsArray = input.split("\r\n");
+	const instructionsArray = input.split("\r?\n");
 
 	let horizontal = 0;
 	let depth = 0;
