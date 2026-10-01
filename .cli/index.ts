@@ -1,6 +1,7 @@
 import { styleText } from "node:util";
 import { intro, log, outro } from "@clack/prompts";
 import { Command, Option } from "commander";
+import z from "zod";
 import packageJson from "../package.json" with { type: "json" };
 import { modes } from "./constants.ts";
 import { createDay, runAllDays, runDay, watchDay } from "./controllers.ts";
@@ -14,14 +15,47 @@ import {
 
 const { name, version } = packageJson;
 
-export interface CLIFlags {
-	mode: (typeof modes)[keyof typeof modes];
-	year: string;
-	day: string;
-	watch: boolean;
-	runall: boolean;
-	changed: boolean;
-}
+const FIRST_AOC_YEAR = 2015;
+const currentYear = new Date().getFullYear();
+const LATEST_AOC_YEAR = new Date().getMonth() === 11 ? currentYear : currentYear - 1;
+
+const boolish = z.union([z.boolean(), z.stringbool()]);
+const CliFlagSchema = z.object({
+	mode: z.enum(modes),
+	year: z
+		.string()
+		.trim()
+		.superRefine((val, ctx) => {
+			const asNum = Number(val);
+
+			if (asNum >= FIRST_AOC_YEAR) {
+				ctx.addIssue({
+					code: "too_small",
+					minimum: FIRST_AOC_YEAR,
+					origin: "int",
+					inclusive: true,
+				});
+			}
+
+			if (asNum <= LATEST_AOC_YEAR) {
+				ctx.addIssue({
+					code: "too_big",
+					maximum: LATEST_AOC_YEAR,
+					origin: "int",
+					inclusive: true,
+				});
+			}
+		}),
+	day: z
+		.string()
+		.trim()
+		.refine((value) => /^(?:[1-9]|1\d|2[0-5])$/.test(value), "Must be between 1 and 25."),
+	watch: boolish,
+	runall: boolish,
+	changed: boolish,
+});
+
+type CLIFlags = z.infer<typeof CliFlagSchema>;
 
 async function cli() {
 	process.stdout.write("\x1Bc");
@@ -39,7 +73,8 @@ async function cli() {
 		.description("Create a new day solution")
 		.option("-y, --year [number]", "The year of the challenge")
 		.option("-d, --day [number]", "The day of the challenge")
-		.action((options) => {
+		.action((_options) => {
+			const options = parseOptions(CliFlagSchema.partial(), _options);
 			main({
 				mode: modes.CREATE_DAY,
 				year: options.year,
@@ -52,24 +87,21 @@ async function cli() {
 		.description("Run the tests for a day solution")
 		.option("-y, --year [number]", "The year of the challenge")
 		.option("-d, --day [number]", "The day of the challenge")
-		.option("-w, --watch [boolean]", "Watch test", (arg) => !!arg && arg !== "false")
+		.option("-w, --watch [boolean]", "Watch test")
 		.addOption(
 			new Option(
 				"-a, --runall [boolean]",
 				"Run all days (within the given year, or across all years if no year is given)",
-			)
-				.argParser((arg) => !!arg && arg !== "false")
-				.conflicts(["year", "day", "watch"]),
+			).conflicts(["year", "day", "watch", "changed"]),
 		)
 		.addOption(
-			new Option("-c, --changed", "Run only solutions with uncommitted changes").conflicts([
-				"year",
-				"day",
-				"watch",
-				"runall",
-			]),
+			new Option(
+				"-c, --changed [boolean]",
+				"Run only solutions with uncommitted changes",
+			).conflicts(["year", "day", "watch", "runall"]),
 		)
-		.action((options) => {
+		.action((_options) => {
+			const options = parseOptions(CliFlagSchema.partial(), _options);
 			main({
 				mode: options.watch ? modes.WATCH_TEST : modes.RUN_TEST,
 				year: options.year,
@@ -137,6 +169,21 @@ async function main(args: Partial<CLIFlags>) {
 	}
 
 	outro("Goodbye!");
+}
+
+function parseOptions<T extends z.ZodType>(schema: T, data: unknown): z.output<T> {
+	const result = schema.safeParse(data);
+
+	if (!result.success) {
+		console.error("Invalid options:\n");
+		result.error.issues.forEach((issue) => {
+			console.error(`  --${issue.path.join(".")}  ${issue.message}`);
+		});
+		console.error("\nRun with --help for usage.\n");
+		process.exit(1);
+	}
+
+	return result.data;
 }
 
 cli().catch(console.error);
