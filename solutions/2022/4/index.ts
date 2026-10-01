@@ -1,7 +1,10 @@
 // https://adventofcode.com/2022/day/4
-import { readFile } from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-const input = await readFile("./input.txt", "utf8");
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 4: Camp Cleanup ---
 // Space needs to be cleared before the last supplies can be unloaded from the ships, and so several Elves have been assigned the job of cleaning up sections of the camp. Every section has a unique ID number, and each Elf is assigned a range of section IDs.

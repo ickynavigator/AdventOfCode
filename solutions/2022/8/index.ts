@@ -1,6 +1,9 @@
-import { readFile } from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-const input = await readFile("./input.txt", "utf8");
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 8: Treetop Tree House ---
 // The expedition comes across a peculiar patch of tall trees all planted carefully in a grid. The Elves explain that a previous expedition planted these trees as a reforestation effort. Now, they're curious if this would be a good location for a tree house.

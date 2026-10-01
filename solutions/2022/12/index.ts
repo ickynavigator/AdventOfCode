@@ -1,7 +1,10 @@
 // straight up lifted this code from Theo(T3/ping) and i do not plan to attempt it anytime soon
-import { readFile } from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-const input = await readFile("./input.txt", "utf8");
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 12: Hill Climbing Algorithm ---
 // You try contacting the Elves using your handheld device, but the river you're following must be too low to get a decent signal.

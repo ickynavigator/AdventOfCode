@@ -1,7 +1,10 @@
 // https://adventofcode.com/2022/day/11
-import { readFile } from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-const input = await readFile("./input.txt", "utf8");
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 11: Monkey in the Middle ---
 // As you finally start making your way upriver, you realize your pack is much lighter than you remember. Just then, one of the items from your pack goes flying overhead. Monkeys are playing Keep Away with your missing things!

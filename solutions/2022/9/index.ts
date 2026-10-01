@@ -1,7 +1,10 @@
 // https://adventofcode.com/2022/day/9
-import { readFile } from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-const input = await readFile("./input.txt", "utf8");
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 9: Rope Bridge ---
 // This rope bridge creaks as you walk along it. You aren't sure how old it is, or whether it can even support your weight.

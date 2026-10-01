@@ -1,7 +1,10 @@
 // https://adventofcode.com/2022/day/10
-import { readFile } from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-const input = await readFile("./input.txt", "utf8");
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 10: Cathode-Ray Tube ---
 // You avoid the ropes, plunge into the river, and swim to shore.

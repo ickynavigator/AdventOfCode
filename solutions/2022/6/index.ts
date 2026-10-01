@@ -1,7 +1,10 @@
 // https://adventofcode.com/2022/day/6
-import { readFile } from "node:fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-const input = await readFile("./input.txt", "utf8");
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const inputPath = path.resolve(__dirname, "input.txt");
+const input = await fs.readFile(inputPath, { encoding: "utf8" });
 
 // --- Day 6: Tuning Trouble ---
 // The preparations are finally complete; you and the Elves leave camp on foot and begin to make your way toward the star fruit grove.
