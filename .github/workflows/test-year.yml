@@ -24,6 +24,11 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v7
 
+            - uses: pnpm/setup@v3
+              name: Install pnpm
+              with:
+                  cache: true
+
             - name: Run Day ${{ inputs.year }}/${{ matrix.day }}
               working-directory: solutions/${{ inputs.year }}/${{ matrix.day }}
               run: node index.ts
