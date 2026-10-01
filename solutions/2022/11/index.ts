@@ -283,10 +283,6 @@ const PartOne = (input: string) => {
 		});
 	}
 
-	inspects.forEach((inspect, ind) => {
-		console.log(`Monkey ${ind} inspected items ${inspect} times.`);
-	});
-
 	const sortedInspects = inspects.sort((a, b) => b - a);
 	console.log(sortedInspects[0] * sortedInspects[1]);
 };
@@ -430,10 +426,6 @@ const PartTwo = (input: string) => {
 			monkey.starting = [];
 		});
 	}
-
-	inspects.forEach((inspect, ind) => {
-		console.log(`Monkey ${ind} inspected items ${inspect} times.`);
-	});
 
 	const sortedInspects = inspects.sort((a, b) => b - a);
 	console.log(sortedInspects[0] * sortedInspects[1]);
