@@ -30,9 +30,9 @@ jobs:
                     for (const year of fs.readdirSync(root)) {
                       const yearPath = path.join(root, year);
                       if (!fs.statSync(yearPath).isDirectory()) continue;
-                      const days = fs.readdirSync(yearPath).filter((day) =>
-                        fs.existsSync(path.join(yearPath, day, "index.ts")),
-                      );
+                      const days = fs.readdirSync(yearPath)
+                        .filter((day) => fs.existsSync(path.join(yearPath, day, "index.ts")))
+                        .sort((a, b) => Number(a) - Number(b));
                       if (days.length > 0) byYear[year] = days;
                     }
                     fs.writeFileSync("matrix.json", JSON.stringify(byYear));
