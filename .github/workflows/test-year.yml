@@ -1,0 +1,29 @@
+name: Test Year
+
+on:
+    workflow_call:
+        inputs:
+            year:
+                required: true
+                type: string
+            days:
+                description: JSON-encoded array of day folder names for this year
+                required: true
+                type: string
+
+jobs:
+    test:
+        name: Day ${{ matrix.day }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                day: ${{ fromJson(inputs.days) }}
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - name: Run Day ${{ inputs.year }}/${{ matrix.day }}
+              working-directory: solutions/${{ inputs.year }}/${{ matrix.day }}
+              run: node index.ts

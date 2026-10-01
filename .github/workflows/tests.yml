@@ -12,47 +12,48 @@ jobs:
         name: Discover Days
         runs-on: ubuntu-latest
         outputs:
+            years: ${{ steps.set-matrix.outputs.years }}
             matrix: ${{ steps.set-matrix.outputs.matrix }}
 
         steps:
             - name: Checkout Repository
               uses: actions/checkout@v7
 
-            - name: Build matrix of year/day solutions
+            - name: Build matrix of days grouped by year
               id: set-matrix
               run: |
-                  matrix=$(node -e '
+                  node -e '
                     const fs = require("node:fs");
                     const path = require("node:path");
                     const root = "solutions";
-                    const entries = [];
+                    const byYear = {};
                     for (const year of fs.readdirSync(root)) {
                       const yearPath = path.join(root, year);
                       if (!fs.statSync(yearPath).isDirectory()) continue;
-                      for (const day of fs.readdirSync(yearPath)) {
-                        const dayPath = path.join(yearPath, day);
-                        if (fs.existsSync(path.join(dayPath, "index.ts"))) {
-                          entries.push({ year, day });
-                        }
-                      }
+                      const days = fs.readdirSync(yearPath).filter((day) =>
+                        fs.existsSync(path.join(yearPath, day, "index.ts")),
+                      );
+                      if (days.length > 0) byYear[year] = days;
                     }
-                    console.log(JSON.stringify(entries));
-                  ')
+                    fs.writeFileSync("matrix.json", JSON.stringify(byYear));
+                  '
+                  matrix=$(cat matrix.json)
+                  years=$(node -e 'console.log(JSON.stringify(Object.keys(require("./matrix.json"))))')
                   echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+                  echo "years=$years" >> "$GITHUB_OUTPUT"
+                  rm matrix.json
 
+    # Each year is dispatched as its own call to the reusable test-year.yml
+    # workflow, so GitHub groups every year's days into its own collapsible
+    # section automatically — no manual job needed when a new year is added.
     test:
-        name: Day ${{ matrix.year }}/${{ matrix.day }}
+        name: Year ${{ matrix.year }}
         needs: discover
-        runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
-                include: ${{ fromJson(needs.discover.outputs.matrix) }}
-
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v7
-
-            - name: Run Day ${{ matrix.year }}/${{ matrix.day }}
-              working-directory: solutions/${{ matrix.year }}/${{ matrix.day }}
-              run: node index.ts
+                year: ${{ fromJson(needs.discover.outputs.years) }}
+        uses: ./.github/workflows/test-year.yml
+        with:
+            year: ${{ matrix.year }}
+            days: ${{ toJson(fromJson(needs.discover.outputs.matrix)[matrix.year]) }}
