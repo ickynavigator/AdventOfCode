@@ -5,6 +5,7 @@
     "./solutions/**/*.ts"
   ],
   "compilerOptions": {
+    "rewriteRelativeImportExtensions": true,
     "allowImportingTsExtensions": true,
     "noUncheckedIndexedAccess": false,
     "types": [

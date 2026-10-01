@@ -1,12 +1,7 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
-		"includes": [
-			"**",
-			"!**/node_modules",
-			"!**/*.json",
-			"!**/.cli/template"
-		]
+		"includes": ["**", "!**/node_modules", "!**/*.json", "!**/.cli/template"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -88,12 +83,7 @@
 				"noWith": "error"
 			}
 		},
-		"includes": [
-			"**",
-			"!**/*.cjs",
-			"!**/*.mjs",
-			"!**/*.js"
-		]
+		"includes": ["**", "!**/*.cjs", "!**/*.mjs", "!**/*.js"]
 	},
 	"javascript": {
 		"formatter": {
