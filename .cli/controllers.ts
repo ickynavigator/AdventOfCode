@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { log } from "@clack/prompts";
-import { FileManager } from "./utils.ts";
+import { FileManager, getDays, getYears } from "./utils.ts";
 
 export async function createDay(year: string, day: string) {
 	log.info(`Creating ${year}/${day}`);
@@ -46,6 +46,22 @@ export async function runDay(year: string, day: string) {
 	log.info(`Running ${year}/${day}`);
 
 	await import(path.resolve(FileManager.__dirname, "..", "solutions", year, day, "index.ts"));
+}
+
+export async function runAllDays() {
+	const years = await getYears(true);
+
+	for (const currentYear of years) {
+		const days = await getDays(currentYear, true);
+
+		for (const currentDay of days) {
+			try {
+				await runDay(currentYear, currentDay);
+			} catch {
+				log.error(`Failed to run day ${currentYear}/${currentDay}!. Does it exist?`);
+			}
+		}
+	}
 }
 
 export async function watchDay(year: string, day: string) {
