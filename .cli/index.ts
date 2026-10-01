@@ -95,10 +95,12 @@ async function cli() {
 			).conflicts(["year", "day", "watch", "changed"]),
 		)
 		.addOption(
-			new Option(
-				"-c, --changed [boolean]",
-				"Run only solutions with uncommitted changes",
-			).conflicts(["year", "day", "watch", "runall"]),
+			new Option("-c, --changed", "Run only solutions with uncommitted changes").conflicts([
+				"year",
+				"day",
+				"watch",
+				"runall",
+			]),
 		)
 		.action((_options) => {
 			const options = parseOptions(CliFlagSchema.partial(), _options);
