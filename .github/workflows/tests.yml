@@ -1,0 +1,58 @@
+name: Test Days
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    discover:
+        name: Discover Days
+        runs-on: ubuntu-latest
+        outputs:
+            matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - name: Build matrix of year/day solutions
+              id: set-matrix
+              run: |
+                  matrix=$(node -e '
+                    const fs = require("node:fs");
+                    const path = require("node:path");
+                    const root = "solutions";
+                    const entries = [];
+                    for (const year of fs.readdirSync(root)) {
+                      const yearPath = path.join(root, year);
+                      if (!fs.statSync(yearPath).isDirectory()) continue;
+                      for (const day of fs.readdirSync(yearPath)) {
+                        const dayPath = path.join(yearPath, day);
+                        if (fs.existsSync(path.join(dayPath, "index.ts"))) {
+                          entries.push({ year, day });
+                        }
+                      }
+                    }
+                    console.log(JSON.stringify(entries));
+                  ')
+                  echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+    test:
+        name: Day ${{ matrix.year }}/${{ matrix.day }}
+        needs: discover
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include: ${{ fromJson(needs.discover.outputs.matrix) }}
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v7
+
+            - name: Run Day ${{ matrix.year }}/${{ matrix.day }}
+              working-directory: solutions/${{ matrix.year }}/${{ matrix.day }}
+              run: node index.ts
