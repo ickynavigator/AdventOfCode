@@ -10,8 +10,8 @@
         "lint:fix": "biome check --write"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.5.14",
-        "@types/node": "^26.6.3"
+        "@biomejs/biome": "^2.5.15",
+        "@types/node": "^26.6.4"
     },
     "dependencies": {
         "@clack/prompts": "^1.8.1",
@@ -28,7 +28,7 @@
         },
         "packageManager": {
             "name": "pnpm",
-            "version": "12.8.1",
+            "version": "12.9.1",
             "onFail": "download"
         }
     }
