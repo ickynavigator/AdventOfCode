@@ -1,8 +1,8 @@
+import { watch } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { styleText } from "node:util";
 import { log, outro } from "@clack/prompts";
-import chokidar from "chokidar";
 
 export class _FileManager {
 	__dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -15,38 +15,21 @@ export class _FileManager {
 		}
 	}
 
-	async #_getDirList(...location: string[]) {
-		return await fs.readdir(path.resolve(this.__dirname, ...location));
-	}
+	async getSortedList(location: string[], shouldNotFail: boolean) {
+		let files: string[];
 
-	private async getDirList(...location: string[]) {
 		try {
-			return await this.#_getDirList(...location);
+			files = await fs.readdir(path.resolve(this.__dirname, ...location));
 		} catch {
-			outro(styleText("bgRed", "An error occured while trying to get the list!"));
-			process.exit(1);
-		}
-	}
-
-	private async getDirList_safe(...location: string[]) {
-		try {
-			return await this.#_getDirList(...location);
-		} catch {
-			return [];
-		}
-	}
-
-	async getSortedList(path: string[], shouldNotFail: boolean) {
-		let method;
-
-		if (shouldNotFail) {
-			method = this.getDirList;
-		} else {
-			method = this.getDirList_safe;
+			if (shouldNotFail) {
+				files = [];
+			} else {
+				outro(styleText("bgRed", "An error occured while trying to get the list!"));
+				process.exit(1);
+			}
 		}
 
-		const _files = await method(...path);
-		return _files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+		return files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 	}
 
 	async watch(
@@ -59,31 +42,35 @@ export class _FileManager {
 		},
 	) {
 		return new Promise<void>((resolve, reject) => {
-			const watcher = chokidar.watch(files);
-
-			const changeHandler = (path: string) => {
-				if (options?.clearOnSave) {
-					process.stdout.write("\x1Bc");
-				}
-				log.info("File save detected! Rerunning");
-				options?.onChange?.(path);
-			};
-
-			const errorHandler = (error: unknown) => {
+			const errorHandler = (error: Error) => {
 				options?.onError?.(error);
 
-				reject();
+				reject(error);
 			};
 
 			const exitHandler = () => {
 				options?.onExit?.();
 
-				watcher.close?.();
+				watchers.forEach((watcher) => watcher.close());
+
 				resolve();
 			};
 
-			watcher.on("change", changeHandler).on("error", errorHandler);
-			process.on("SIGINT", exitHandler).on("SIGTERM", exitHandler).on("SIGQUIT", exitHandler);
+			const watchers = files.map((file) => {
+				const watcher = watch(file, (eventType) => {
+					if (eventType !== "change") return;
+					if (options?.clearOnSave) process.stdout.write("\x1Bc");
+
+					log.info("File save detected! Rerunning");
+					options?.onChange?.(file);
+				});
+
+				watcher.on("error", errorHandler);
+
+				return watcher;
+			});
+
+			process.once("SIGINT", exitHandler).once("SIGTERM", exitHandler).once("SIGQUIT", exitHandler);
 		});
 	}
 }
