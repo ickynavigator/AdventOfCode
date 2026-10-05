@@ -28,7 +28,7 @@ const CliFlagSchema = z.object({
 		.superRefine((val, ctx) => {
 			const asNum = Number(val);
 
-			if (asNum >= FIRST_AOC_YEAR) {
+			if (asNum < FIRST_AOC_YEAR) {
 				ctx.addIssue({
 					code: "too_small",
 					minimum: FIRST_AOC_YEAR,
@@ -37,7 +37,7 @@ const CliFlagSchema = z.object({
 				});
 			}
 
-			if (asNum <= LATEST_AOC_YEAR) {
+			if (asNum > LATEST_AOC_YEAR) {
 				ctx.addIssue({
 					code: "too_big",
 					maximum: LATEST_AOC_YEAR,
@@ -49,7 +49,27 @@ const CliFlagSchema = z.object({
 	day: z
 		.string()
 		.trim()
-		.refine((value) => /^(?:[1-9]|1\d|2[0-5])$/.test(value), "Must be between 1 and 25."),
+		.superRefine((val, ctx) => {
+			const asNum = Number(val);
+
+			if (asNum < 1) {
+				ctx.addIssue({
+					code: "too_small",
+					minimum: 1,
+					origin: "int",
+					inclusive: true,
+				});
+			}
+
+			if (asNum > 25) {
+				ctx.addIssue({
+					code: "too_big",
+					maximum: 25,
+					origin: "int",
+					inclusive: true,
+				});
+			}
+		}),
 	watch: boolish,
 	runall: boolish,
 	changed: boolish,
