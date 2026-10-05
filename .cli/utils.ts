@@ -19,7 +19,7 @@ export class _FileManager {
 		return await fs.readdir(path.resolve(this.__dirname, ...location));
 	}
 
-	async getDirList(...location: string[]) {
+	private async getDirList(...location: string[]) {
 		try {
 			return await this.#_getDirList(...location);
 		} catch {
@@ -28,12 +28,25 @@ export class _FileManager {
 		}
 	}
 
-	async getDirList_safe(...location: string[]) {
+	private async getDirList_safe(...location: string[]) {
 		try {
 			return await this.#_getDirList(...location);
 		} catch {
 			return [];
 		}
+	}
+
+	async getSortedList(path: string[], shouldNotFail: boolean) {
+		let method;
+
+		if (shouldNotFail) {
+			method = this.getDirList;
+		} else {
+			method = this.getDirList_safe;
+		}
+
+		const _files = await method(...path);
+		return _files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 	}
 
 	async watch(
@@ -77,23 +90,10 @@ export class _FileManager {
 
 export const FileManager = new _FileManager();
 
-async function getSortedList(path: string[], shouldNotFail: boolean) {
-	let method: "getDirList" | "getDirList_safe";
-
-	if (shouldNotFail) {
-		method = "getDirList_safe";
-	} else {
-		method = "getDirList";
-	}
-
-	const _files = await FileManager[method](...path);
-	return _files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-}
-
 export async function getYears(shouldNotFail = false) {
-	return getSortedList(["..", "solutions"], shouldNotFail);
+	return FileManager.getSortedList(["..", "solutions"], shouldNotFail);
 }
 
 export async function getDays(year: string, shouldNotFail = false) {
-	return getSortedList(["..", "solutions", year], shouldNotFail);
+	return FileManager.getSortedList(["..", "solutions", year], shouldNotFail);
 }
