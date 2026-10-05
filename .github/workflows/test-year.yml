@@ -26,8 +26,6 @@ jobs:
 
             - uses: pnpm/setup@v3
               name: Install pnpm
-              with:
-                  cache: true
 
             - name: Run Day ${{ inputs.year }}/${{ matrix.day }}
               working-directory: solutions/${{ inputs.year }}/${{ matrix.day }}

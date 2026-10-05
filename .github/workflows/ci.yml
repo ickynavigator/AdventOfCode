@@ -25,8 +25,6 @@ jobs:
 
             - uses: pnpm/setup@v3
               name: Install pnpm
-              with:
-                  cache: true
 
             - name: Run Typecheck
               run: |
@@ -42,8 +40,6 @@ jobs:
 
             - uses: pnpm/setup@v3
               name: Install pnpm
-              with:
-                  cache: true
 
             - name: Setup Biome
               uses: biomejs/setup-biome@v2
