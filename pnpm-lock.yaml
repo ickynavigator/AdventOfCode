@@ -178,6 +178,9 @@ importers:
       simple-git:
         specifier: ^4.0.2
         version: 4.0.2
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
       zod:
         specifier: ^4.6.5
         version: 4.6.5
@@ -188,9 +191,6 @@ importers:
       '@types/node':
         specifier: ^26.6.3
         version: 26.6.3
-      typescript:
-        specifier: ^7.0.2
-        version: 7.0.2
 
 packages:
 
