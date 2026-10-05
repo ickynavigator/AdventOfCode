@@ -29,7 +29,7 @@
         "packageManager": {
             "name": "pnpm",
             "version": "12.9.1",
-            "onFail": "download"
+            "onFail": "error"
         }
     }
 }
